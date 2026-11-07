@@ -28,3 +28,18 @@
 - Parameter readouts use exactly one space between the value and its unit:
   `520 Hz`, `20 %`, `0 st`, `300 ms`, `132 BPM`.
 - Never concatenate a unit directly to a value (`520Hz`, `20%`, `0st`, `300ms` are wrong).
+
+## Agent commands
+
+### `UAT`
+
+When the user sends exactly `UAT`:
+
+1. Verify the current working tree compiles successfully without errors.
+2. Push the current feature branch to GitHub without merging into `main`:
+   `git push -u origin <current-branch>`.
+3. Build the universal Release app and deploy it directly to the user's Applications directory at
+   `$HOME/Applications/Vinegar303.app`, replacing the installed copy. Do not create or use an
+   installable DMG for UAT.
+4. Report the deployed app path, pushed branch, architecture/signature checks, and any checks that
+   could not be completed.

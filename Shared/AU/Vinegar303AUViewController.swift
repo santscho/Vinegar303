@@ -19,6 +19,12 @@ private struct Vinegar303PluginView: View {
     let patterns: PatternStore
     let presets: Vinegar303PresetController
     let playhead: () -> Int
+    @AppStorage(Vinegar303AppearanceMode.storageKey)
+    private var appearanceRawValue = Vinegar303AppearanceMode.system.rawValue
+
+    private var appearanceMode: Vinegar303AppearanceMode {
+        Vinegar303AppearanceMode(rawValue: appearanceRawValue) ?? .system
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -39,7 +45,7 @@ private struct Vinegar303PluginView: View {
             .frame(width: size.width, height: size.height)
         }
         .background(Vinegar303Theme.background)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(appearanceMode.colorScheme)
     }
 }
 
@@ -63,7 +69,7 @@ public final class Vinegar303AUViewController: AUViewController, AUAudioUnitFact
         let size = Vinegar303PluginMetrics.nativeContentSize
         let container = NSView(frame: NSRect(origin: .zero, size: size))
         container.wantsLayer = true
-        container.layer?.backgroundColor = NSColor(red: 0.035, green: 0.038, blue: 0.047, alpha: 1).cgColor
+        container.layer?.backgroundColor = Vinegar303Theme.backgroundNSColor.cgColor
         view = container
         preferredContentSize = size
     }

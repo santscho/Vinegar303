@@ -1,22 +1,202 @@
+import AppKit
 import SwiftUI
 
-enum Vinegar303Theme {
-    static let background = Color(red: 0.035, green: 0.038, blue: 0.047)
-    static let panelTop = Color(red: 0.094, green: 0.101, blue: 0.118)
-    static let panelBottom = Color(red: 0.060, green: 0.066, blue: 0.078)
-    static let border = Color.white.opacity(0.075)
-    static let text = Color(red: 0.91, green: 0.92, blue: 0.94)
-    static let dim = Color(red: 0.53, green: 0.56, blue: 0.62)
-    static let faint = Color(red: 0.30, green: 0.32, blue: 0.37)
+enum Vinegar303AppearanceMode: String, CaseIterable, Identifiable {
+    case system
+    case light
+    case dark
 
-    static let acid = Color(red: 0.80, green: 0.98, blue: 0.32)
-    static let amber = Color(red: 1.00, green: 0.70, blue: 0.28)
-    static let cyan = Color(red: 0.38, green: 0.84, blue: 0.92)
+    static let storageKey = "appearanceMode"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .system: return "Auto"
+        case .light: return "Light"
+        case .dark: return "Dark"
+        }
+    }
+
+    var help: String {
+        switch self {
+        case .system: return "Follow the macOS appearance"
+        case .light: return "Use the light appearance"
+        case .dark: return "Use the dark appearance"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .system: return "circle.lefthalf.filled"
+        case .light: return "sun.max.fill"
+        case .dark: return "moon.fill"
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+
+    var nsAppearance: NSAppearance? {
+        switch self {
+        case .system: return nil
+        case .light: return NSAppearance(named: .aqua)
+        case .dark: return NSAppearance(named: .darkAqua)
+        }
+    }
+}
+
+private func vinegarNSColor(_ red: CGFloat, _ green: CGFloat, _ blue: CGFloat) -> NSColor {
+    NSColor(srgbRed: red, green: green, blue: blue, alpha: 1)
+}
+
+private func vinegarDynamicColor(light: NSColor, dark: NSColor) -> Color {
+    Color(nsColor: NSColor(name: nil) { appearance in
+        appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? dark : light
+    })
+}
+
+private func vinegarDynamicNSColor(light: NSColor, dark: NSColor) -> NSColor {
+    NSColor(name: nil) { appearance in
+        appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? dark : light
+    }
+}
+
+enum Vinegar303Theme {
+    static let background = vinegarDynamicColor(
+        light: vinegarNSColor(0.957, 0.949, 0.918),
+        dark: vinegarNSColor(0.035, 0.038, 0.047)
+    )
+    static let backgroundNSColor = vinegarDynamicNSColor(
+        light: vinegarNSColor(0.957, 0.949, 0.918),
+        dark: vinegarNSColor(0.035, 0.038, 0.047)
+    )
+    static let panelTop = vinegarDynamicColor(
+        light: vinegarNSColor(0.992, 0.988, 0.973),
+        dark: vinegarNSColor(0.094, 0.101, 0.118)
+    )
+    static let panelBottom = vinegarDynamicColor(
+        light: vinegarNSColor(0.910, 0.898, 0.855),
+        dark: vinegarNSColor(0.060, 0.066, 0.078)
+    )
+    static let border = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.12),
+        dark: NSColor.white.withAlphaComponent(0.075)
+    )
+    static let text = vinegarDynamicColor(
+        light: vinegarNSColor(0.12, 0.13, 0.15),
+        dark: vinegarNSColor(0.91, 0.92, 0.94)
+    )
+    static let dim = vinegarDynamicColor(
+        light: vinegarNSColor(0.36, 0.38, 0.42),
+        dark: vinegarNSColor(0.53, 0.56, 0.62)
+    )
+    static let faint = vinegarDynamicColor(
+        light: vinegarNSColor(0.55, 0.57, 0.61),
+        dark: vinegarNSColor(0.30, 0.32, 0.37)
+    )
+
+    static let acid = vinegarDynamicColor(
+        light: vinegarNSColor(0.32, 0.43, 0.02),
+        dark: vinegarNSColor(0.80, 0.98, 0.32)
+    )
+    static let amber = vinegarDynamicColor(
+        light: vinegarNSColor(0.68, 0.38, 0.00),
+        dark: vinegarNSColor(1.00, 0.70, 0.28)
+    )
+    static let cyan = vinegarDynamicColor(
+        light: vinegarNSColor(0.00, 0.43, 0.52),
+        dark: vinegarNSColor(0.38, 0.84, 0.92)
+    )
+
+    static let onAccent = vinegarDynamicColor(light: .white, dark: .black)
+    static let controlFill = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.045),
+        dark: NSColor.white.withAlphaComponent(0.04)
+    )
+    static let controlFillHover = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.08),
+        dark: NSColor.white.withAlphaComponent(0.075)
+    )
+    static let controlFillSubtle = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.025),
+        dark: NSColor.white.withAlphaComponent(0.018)
+    )
+    static let track = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.075),
+        dark: NSColor.black.withAlphaComponent(0.35)
+    )
+    static let insetFill = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.035),
+        dark: NSColor.black.withAlphaComponent(0.24)
+    )
+    static let insetFillSubtle = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.02),
+        dark: NSColor.black.withAlphaComponent(0.10)
+    )
+    static let insetStrong = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.08),
+        dark: NSColor.black.withAlphaComponent(0.72)
+    )
+    static let grid = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.07),
+        dark: NSColor.white.withAlphaComponent(0.04)
+    )
+    static let tickInactive = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.18),
+        dark: NSColor.white.withAlphaComponent(0.08)
+    )
+    static let hostBar = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.04),
+        dark: NSColor.black.withAlphaComponent(0.28)
+    )
 
     static let mono = Font.system(size: 10, weight: .medium, design: .monospaced)
     static let monoSmall = Font.system(size: 8.5, weight: .medium, design: .monospaced)
     static let label = Font.system(size: 9, weight: .semibold, design: .default)
     static let readout = Font.system(size: 9.5, weight: .semibold, design: .monospaced)
+}
+
+struct Vinegar303AppearanceSwitcher: View {
+    @Binding var selection: Vinegar303AppearanceMode
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(Vinegar303AppearanceMode.allCases) { mode in
+                Button {
+                    selection = mode
+                } label: {
+                    Image(systemName: mode.symbol)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(selection == mode ? Vinegar303Theme.onAccent : Vinegar303Theme.dim)
+                        .frame(width: 28, height: 26)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                .fill(selection == mode ? Vinegar303Theme.acid : Color.clear)
+                        )
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help(mode.help)
+                .accessibilityLabel(Text(mode.title))
+                .accessibilityValue(Text(selection == mode ? "Selected" : ""))
+            }
+        }
+        .padding(2)
+        .background(
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                .fill(Vinegar303Theme.controlFill)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                .stroke(Vinegar303Theme.border, lineWidth: 1)
+        )
+    }
 }
 
 // MARK: - Panel chrome
@@ -75,11 +255,11 @@ struct Vinegar303RunButton: View {
         Button(action: action) {
             Image(systemName: isRunning ? "stop.fill" : "play.fill")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(isRunning ? Color.black : Vinegar303Theme.text)
+                .foregroundStyle(isRunning ? Vinegar303Theme.onAccent : Vinegar303Theme.text)
                 .frame(width: 36, height: 36)
                 .background(
                     Circle()
-                        .fill(isRunning ? Vinegar303Theme.acid : Color.white.opacity(0.06))
+                        .fill(isRunning ? Vinegar303Theme.acid : Vinegar303Theme.controlFill)
                 )
                 .overlay(
                     Circle()
@@ -116,7 +296,7 @@ struct Vinegar303Chip: View {
             .padding(.vertical, 6)
             .background(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(Color.white.opacity(hovering ? 0.075 : 0.04))
+                    .fill(hovering ? Vinegar303Theme.controlFillHover : Vinegar303Theme.controlFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
@@ -139,6 +319,7 @@ struct Vinegar303MenuChip: View {
 
     @State private var hovering = false
     @State private var showingOptions = false
+    @Environment(\.colorScheme) private var colorScheme
 
     init(
         caption: String,
@@ -180,7 +361,7 @@ struct Vinegar303MenuChip: View {
             .padding(.vertical, 6)
             .background(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(Color.white.opacity(hovering ? 0.075 : 0.04))
+                    .fill(hovering ? Vinegar303Theme.controlFillHover : Vinegar303Theme.controlFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
@@ -222,7 +403,7 @@ struct Vinegar303MenuChip: View {
             }
             .padding(5)
             .background(Vinegar303Theme.background)
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(colorScheme)
         }
     }
 }
@@ -245,7 +426,7 @@ struct Vinegar303Stepper: View {
         .padding(2)
         .background(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(Color.white.opacity(0.04))
+                .fill(Vinegar303Theme.controlFill)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -277,7 +458,7 @@ struct Vinegar303WaveformSwitch: View {
         .padding(2)
         .background(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(Color.black.opacity(0.35))
+                .fill(Vinegar303Theme.track)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -289,7 +470,7 @@ struct Vinegar303WaveformSwitch: View {
         Button(action: action) {
             Text(title)
                 .font(Vinegar303Theme.readout)
-                .foregroundStyle(selected ? Color.black : Vinegar303Theme.dim)
+                .foregroundStyle(selected ? Vinegar303Theme.onAccent : Vinegar303Theme.dim)
                 .frame(width: 40, height: 20)
                 .background(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
@@ -310,12 +491,12 @@ struct Vinegar303ToggleDot: View {
         Button(action: action) {
             Text(symbol)
                 .font(.system(size: 8, weight: .bold, design: .monospaced))
-                .foregroundStyle(isOn ? Color.black : Vinegar303Theme.faint)
+                .foregroundStyle(isOn ? Vinegar303Theme.onAccent : Vinegar303Theme.faint)
                 .frame(maxWidth: .infinity)
                 .frame(height: 15)
                 .background(
                     RoundedRectangle(cornerRadius: 3, style: .continuous)
-                        .fill(isOn ? accent : Color.white.opacity(0.05))
+                        .fill(isOn ? accent : Vinegar303Theme.controlFill)
                 )
         }
         .buttonStyle(.plain)
