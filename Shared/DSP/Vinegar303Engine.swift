@@ -145,7 +145,9 @@ public final class Vinegar303Engine {
     }
 
     public func setParameter(_ id: Vinegar303Parameter, _ value: AUValue) {
-        parameterStorage[Int(id.rawValue)] = Vinegar303ParameterCatalog.spec(id).snapped(value)
+        let snapped = Vinegar303ParameterCatalog.spec(id).snapped(value)
+        parameterStorage[Int(id.rawValue)] = snapped
+        updateSelectedPatternLengthIfNeeded(id: id, value: snapped)
     }
 
     public func setParameter(address: AUParameterAddress, value: AUValue) {
@@ -153,7 +155,15 @@ public final class Vinegar303Engine {
         guard index > 0,
               index < Self.maxParameters,
               let id = Vinegar303Parameter(rawValue: address) else { return }
-        parameterStorage[index] = Vinegar303ParameterCatalog.spec(id).snapped(value)
+        let snapped = Vinegar303ParameterCatalog.spec(id).snapped(value)
+        parameterStorage[index] = snapped
+        updateSelectedPatternLengthIfNeeded(id: id, value: snapped)
+    }
+
+    private func updateSelectedPatternLengthIfNeeded(id: Vinegar303Parameter, value: AUValue) {
+        guard id == .patternLength else { return }
+        let patternIndex = Int(parameterStorage[Int(Vinegar303Parameter.pattern.rawValue)].rounded())
+        setActivePatternLength(Int(value.rounded()), at: patternIndex)
     }
 
     public func parameter(address: AUParameterAddress) -> AUValue {
@@ -194,6 +204,24 @@ public final class Vinegar303Engine {
         set {
             publishPatterns(newValue)
         }
+    }
+
+    /// Read the active bank's stored length without allocating. Used by the
+    /// parameter observer when the host changes the selected pattern.
+    public func patternLength(at index: Int) -> Int? {
+        guard index >= 0, index < Self.maxPatterns else { return nil }
+        let lengths = activeBank == 0 ? bankALengths : bankBLengths
+        return Int(lengths[index])
+    }
+
+    /// Update the active bank's stored length without reallocating. This keeps
+    /// a host-automated `patternLength` attached to the selected pattern so
+    /// state recall does not revert it.
+    public func setActivePatternLength(_ length: Int, at index: Int) {
+        guard index >= 0, index < Self.maxPatterns else { return }
+        let clamped = min(max(length, 1), Self.stepsPerPattern)
+        let lengths = activeBank == 0 ? bankALengths : bankBLengths
+        lengths[index] = Int32(clamped)
     }
 
     private func publishPatterns(_ newPatterns: [Vinegar303Pattern]) {

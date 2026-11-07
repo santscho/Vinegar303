@@ -363,7 +363,8 @@ public enum Vinegar303ParameterCatalog {
         spec(
             .waveform, "waveform", "Waveform", 0, 1, 1, .indexed,
             valueStrings: ["Square", "Saw"],
-            flags: [.flag_ValuesHaveStrings]
+            flags: [.flag_ValuesHaveStrings],
+            step: 1
         ),
         spec(.distortion, "distortion", "Distortion", 0, 100, 0, .percent),
         spec(.drive, "drive", "Drive", 0, 24, 0, .decibels),
@@ -371,22 +372,26 @@ public enum Vinegar303ParameterCatalog {
         spec(
             .pattern, "pattern", "Pattern", 0, 15, 0, .indexed,
             valueStrings: (1...16).map { String(format: "%02d", $0) },
-            flags: [.flag_ValuesHaveStrings]
+            flags: [.flag_ValuesHaveStrings, .flag_IsGlobalMeta],
+            step: 1
         ),
         spec(
             .patternLength, "pattern_length", "Length", 1, 16, 16, .indexed,
             valueStrings: (1...16).map { "\($0)" },
-            flags: [.flag_ValuesHaveStrings]
+            flags: [.flag_ValuesHaveStrings],
+            step: 1
         ),
         spec(
             .sync, "sync", "Sync", 0, 1, 1, .indexed,
             valueStrings: ["Free", "Host"],
-            flags: [.flag_ValuesHaveStrings]
+            flags: [.flag_ValuesHaveStrings],
+            step: 1
         ),
         spec(
             .run, "run", "Run", 0, 1, 0, .indexed,
             valueStrings: ["Stop", "Run"],
-            flags: [.flag_ValuesHaveStrings]
+            flags: [.flag_ValuesHaveStrings],
+            step: 1
         ),
         spec(
             .halfSpeed, "halfSpeed", "Half Speed", 0, 1, 0, .indexed,
@@ -397,7 +402,8 @@ public enum Vinegar303ParameterCatalog {
         spec(
             .midiMode, "midi_mode", "MIDI Mode", 0, 1, 0, .indexed,
             valueStrings: ["Pattern", "Note"],
-            flags: [.flag_ValuesHaveStrings]
+            flags: [.flag_ValuesHaveStrings],
+            step: 1
         ),
         spec(
             .pitchTranspose, "pitchTranspose", "Pitch Transpose", -12, 12, 0,

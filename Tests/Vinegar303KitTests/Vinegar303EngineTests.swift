@@ -312,6 +312,10 @@ final class Vinegar303EngineTests: XCTestCase {
 
         let pattern = tree.parameter(withAddress: Vinegar303Parameter.pattern.rawValue)
         XCTAssertEqual(pattern?.flags.contains(.flag_CanRamp), false)
+        XCTAssertTrue(
+            pattern?.flags.contains(.flag_IsGlobalMeta) == true,
+            "Pattern changes the active pattern length and must be declared as a global meta parameter"
+        )
     }
 
     func testParameterModelEmitsTouchValueReleaseAutomationEvents() {
@@ -827,6 +831,44 @@ final class Vinegar303EngineTests: XCTestCase {
         unit.fullState = state
 
         XCTAssertEqual(unit.patterns[5].length, 9)
+    }
+
+    func testIndexedHostParametersSnapAndRetainTheirValue() throws {
+        let unit = try Vinegar303AudioUnit(componentDescription: Vinegar303AudioUnit.componentDescription)
+        let tree = unit.editorParameterTree
+        guard let length = tree.parameter(withAddress: Vinegar303Parameter.patternLength.rawValue)
+        else {
+            return XCTFail("Missing pattern length parameter")
+        }
+
+        try unit.allocateRenderResources()
+        length.setValue(8.294922, originator: nil, atHostTime: 0, eventType: .value)
+        XCTAssertEqual(length.value, 8, accuracy: 0.001)
+        XCTAssertEqual(unit.patterns[0].length, 8)
+
+        unit.reset()
+        XCTAssertEqual(unit.patterns[0].length, 8)
+        XCTAssertEqual(
+            length.value,
+            8,
+            accuracy: 0.001,
+            "An indexed host value must survive reset"
+        )
+
+        let state = unit.fullState
+        unit.fullState = state
+        XCTAssertEqual(length.value, 8, accuracy: 0.001)
+        XCTAssertEqual(unit.patterns[0].length, 8)
+
+        unit.deallocateRenderResources()
+        try unit.allocateRenderResources()
+        XCTAssertEqual(
+            length.value,
+            8,
+            accuracy: 0.001,
+            "An indexed host value must survive reinitialization"
+        )
+        unit.deallocateRenderResources()
     }
 
     func testFXParametersRoundTripThroughFullState() throws {
