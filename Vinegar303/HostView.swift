@@ -14,14 +14,20 @@ enum Vinegar303WindowMetrics {
 
 struct Vinegar303HostView: View {
     @ObservedObject var host: Vinegar303Host
+    @AppStorage(Vinegar303AppearanceMode.storageKey)
+    private var appearanceRawValue = Vinegar303AppearanceMode.system.rawValue
+
+    private var appearanceMode: Vinegar303AppearanceMode {
+        Vinegar303AppearanceMode(rawValue: appearanceRawValue) ?? .system
+    }
 
     var body: some View {
         hostContent
             .frame(width: Vinegar303WindowMetrics.nativeWidth)
             .background(Vinegar303Theme.background)
-            .background(Vinegar303WindowConfigurator())
+            .background(Vinegar303WindowConfigurator(appearance: appearanceMode))
             .background(Vinegar303SpacebarMonitor(action: host.toggleRun))
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(appearanceMode.colorScheme)
     }
 
     private var hostContent: some View {
@@ -76,7 +82,7 @@ struct Vinegar303HostView: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 8)
-        .background(Color.black.opacity(0.28))
+        .background(Vinegar303Theme.hostBar)
         .overlay(alignment: .top) {
             Rectangle()
                 .fill(Vinegar303Theme.border)
@@ -152,6 +158,8 @@ private struct Vinegar303SpacebarMonitor: NSViewRepresentable {
 /// Applies the height-flexible window policy to the SwiftUI-created NSWindow
 /// without replacing its delegate.
 private struct Vinegar303WindowConfigurator: NSViewRepresentable {
+    let appearance: Vinegar303AppearanceMode
+
     final class Coordinator {
         weak var window: NSWindow?
         var isConfigured = false
@@ -171,9 +179,18 @@ private struct Vinegar303WindowConfigurator: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
+        applyAppearance(window: nsView.window)
         DispatchQueue.main.async { [weak nsView, weak coordinator = context.coordinator] in
             guard let nsView else { return }
             configure(window: nsView.window, coordinator: coordinator)
+        }
+    }
+
+    private func applyAppearance(window: NSWindow?) {
+        guard let window else { return }
+        let desired = appearance.nsAppearance
+        if window.appearance?.name != desired?.name {
+            window.appearance = desired
         }
     }
 
@@ -186,10 +203,10 @@ private struct Vinegar303WindowConfigurator: NSViewRepresentable {
         }
         guard !coordinator.isConfigured else { return }
 
-        // Keep the SwiftUI artwork dark against a native titlebar. A standard
-        // titlebar also keeps the editor out from under the traffic lights and
-        // window chrome.
-        window.appearance = NSAppearance(named: .darkAqua)
+        // Match the native titlebar and traffic lights to the selected mode.
+        // A standard titlebar also keeps the editor out from under the window
+        // chrome.
+        applyAppearance(window: window)
 
         // Keep the native traffic lights over the custom titlebar strip. The
         // editor content begins below that strip, so the chrome no longer
@@ -250,12 +267,12 @@ private struct Vinegar303AuditionPad: View {
         Text(isDown ? "C3 ON" : "HOLD C3")
             .font(Vinegar303Theme.monoSmall)
             .tracking(1.0)
-            .foregroundStyle(isDown ? Color.black : Vinegar303Theme.acid)
+            .foregroundStyle(isDown ? Vinegar303Theme.onAccent : Vinegar303Theme.acid)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
             .background(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .fill(isDown ? Vinegar303Theme.acid : Color.white.opacity(0.05))
+                    .fill(isDown ? Vinegar303Theme.acid : Vinegar303Theme.controlFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)

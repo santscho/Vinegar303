@@ -173,7 +173,7 @@ struct Vinegar303SequencerPanel: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(isActive ? Vinegar303Theme.acid.opacity(0.10) : Color.white.opacity(0.015))
+                        .fill(isActive ? Vinegar303Theme.acid.opacity(0.10) : Vinegar303Theme.controlFillSubtle)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -209,7 +209,7 @@ struct Vinegar303SequencerPanel: View {
         HStack(spacing: 4) {
             Text(badge)
                 .font(.system(size: 8, weight: .bold, design: .monospaced))
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Vinegar303Theme.onAccent)
                 .frame(width: 13, height: 13)
                 .background(RoundedRectangle(cornerRadius: 3).fill(color))
             Text(title)
@@ -238,7 +238,7 @@ struct Vinegar303NoteCell: View {
             .frame(height: 21)
             .background(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .fill(Color.black.opacity(0.35))
+                    .fill(Vinegar303Theme.track)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -302,7 +302,7 @@ struct Vinegar303PatternLane: View {
 
             context.fill(
                 Path(roundedRect: lane, cornerRadius: 6),
-                with: .color(Color.black.opacity(0.34))
+                with: .color(Vinegar303Theme.track)
             )
 
             // Horizontal grid.
@@ -311,7 +311,7 @@ struct Vinegar303PatternLane: View {
                 var line = Path()
                 line.move(to: CGPoint(x: lane.minX, y: y))
                 line.addLine(to: CGPoint(x: lane.maxX, y: y))
-                context.stroke(line, with: .color(Color.white.opacity(0.04)), lineWidth: 1)
+                context.stroke(line, with: .color(Vinegar303Theme.grid), lineWidth: 1)
             }
 
             // Vertical step grid.
@@ -320,7 +320,7 @@ struct Vinegar303PatternLane: View {
                 var line = Path()
                 line.move(to: CGPoint(x: x, y: lane.minY))
                 line.addLine(to: CGPoint(x: x, y: lane.maxY))
-                context.stroke(line, with: .color(Color.white.opacity(0.035)), lineWidth: 1)
+                context.stroke(line, with: .color(Vinegar303Theme.grid), lineWidth: 1)
             }
 
             let stepWidth = lane.width / CGFloat(Vinegar303PatternLibrary.stepsPerPattern)
@@ -385,7 +385,7 @@ struct Vinegar303PatternLane: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 7, style: .continuous)
-                .fill(Color.white.opacity(0.012))
+                .fill(Vinegar303Theme.controlFillSubtle)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 7, style: .continuous)

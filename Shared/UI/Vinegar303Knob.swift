@@ -116,7 +116,7 @@ struct Vinegar303Knob: View {
                     : angle <= valueAngle(value) + 0.1
                 context.stroke(
                     tickPath,
-                    with: .color(isLit ? accent.opacity(hovering ? 0.85 : 0.6) : Color.white.opacity(0.08)),
+                    with: .color(isLit ? accent.opacity(hovering ? 0.85 : 0.6) : Vinegar303Theme.tickInactive),
                     style: StrokeStyle(lineWidth: 1, lineCap: .round)
                 )
             }
@@ -125,7 +125,7 @@ struct Vinegar303Knob: View {
             let track = arc(center: center, radius: radius, from: startAngle, to: startAngle + sweepAngle)
             context.stroke(
                 track,
-                with: .color(Color.white.opacity(0.075)),
+                with: .color(Vinegar303Theme.track),
                 style: StrokeStyle(lineWidth: 3.5, lineCap: .round)
             )
 

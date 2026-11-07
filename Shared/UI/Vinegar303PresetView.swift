@@ -63,7 +63,7 @@ struct Vinegar303PresetBrowser: View {
             .padding(2)
             .background(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color.white.opacity(0.04))
+                    .fill(Vinegar303Theme.controlFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -89,7 +89,7 @@ struct Vinegar303PresetBrowser: View {
                 .frame(height: 22)
                 .background(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(Color.white.opacity(0.035))
+                        .fill(Vinegar303Theme.controlFillSubtle)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -116,7 +116,7 @@ struct Vinegar303PresetBrowser: View {
                 .frame(height: 22)
                 .background(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(Color.white.opacity(0.035))
+                        .fill(Vinegar303Theme.controlFillSubtle)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -274,7 +274,6 @@ struct Vinegar303PresetManagerView: View {
         }
         .frame(width: 900, height: 570)
         .background(Vinegar303Theme.background)
-        .preferredColorScheme(.dark)
         .onAppear {
             presets.refreshLibrary()
             reconcileSelection()
@@ -382,7 +381,7 @@ struct Vinegar303PresetManagerView: View {
             .frame(height: 26)
             .background(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .fill(Color.white.opacity(0.04))
+                    .fill(Vinegar303Theme.controlFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -391,7 +390,7 @@ struct Vinegar303PresetManagerView: View {
         }
         .padding(.horizontal, 18)
         .frame(height: 58)
-        .background(Color.black.opacity(0.24))
+        .background(Vinegar303Theme.insetFill)
     }
 
     private var footer: some View {
@@ -426,7 +425,7 @@ struct Vinegar303PresetManagerView: View {
                 .frame(height: 18)
                 .background(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .fill(Color.white.opacity(0.04))
+                        .fill(Vinegar303Theme.controlFill)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
@@ -445,7 +444,7 @@ struct Vinegar303PresetManagerView: View {
         }
         .padding(.horizontal, 18)
         .frame(height: 32)
-        .background(Color.black.opacity(0.24))
+        .background(Vinegar303Theme.insetFill)
     }
 
     // MARK: Categories
@@ -498,7 +497,7 @@ struct Vinegar303PresetManagerView: View {
                 .frame(maxWidth: .infinity, minHeight: 26, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(Color.white.opacity(0.04))
+                        .fill(Vinegar303Theme.controlFill)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -533,7 +532,7 @@ struct Vinegar303PresetManagerView: View {
                 .frame(maxWidth: .infinity, minHeight: 26, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(Color.white.opacity(0.04))
+                        .fill(Vinegar303Theme.controlFill)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -554,7 +553,7 @@ struct Vinegar303PresetManagerView: View {
                         .frame(height: 24)
                         .background(
                             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                .fill(Color.black.opacity(0.35))
+                                .fill(Vinegar303Theme.track)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -579,7 +578,7 @@ struct Vinegar303PresetManagerView: View {
                 .padding(7)
                 .background(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(Color.white.opacity(0.03))
+                        .fill(Vinegar303Theme.controlFillSubtle)
                 )
             }
 
@@ -603,7 +602,7 @@ struct Vinegar303PresetManagerView: View {
                 .frame(maxWidth: .infinity, minHeight: 26, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(Color.white.opacity(0.04))
+                        .fill(Vinegar303Theme.controlFill)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -640,7 +639,7 @@ struct Vinegar303PresetManagerView: View {
                         .frame(height: 24)
                         .background(
                             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                .fill(Color.black.opacity(0.35))
+                                .fill(Vinegar303Theme.track)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -665,14 +664,14 @@ struct Vinegar303PresetManagerView: View {
                 .padding(7)
                 .background(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(Color.white.opacity(0.03))
+                        .fill(Vinegar303Theme.controlFillSubtle)
                 )
             }
 
             Spacer(minLength: 0)
         }
         .padding(12)
-        .background(Color.black.opacity(0.10))
+        .background(Vinegar303Theme.insetFillSubtle)
     }
 
     private func categoryRow(_ category: Vinegar303PresetCategory) -> some View {
@@ -745,7 +744,7 @@ struct Vinegar303PresetManagerView: View {
             Spacer(minLength: 0)
         }
         .padding(12)
-        .background(Color.white.opacity(0.008))
+        .background(Vinegar303Theme.controlFillSubtle)
     }
 
     private func presetRow(_ entry: Vinegar303PresetEntry) -> some View {
@@ -866,7 +865,7 @@ struct Vinegar303PresetManagerView: View {
                         .frame(height: 26)
                         .background(
                             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                .fill(Color.black.opacity(0.35))
+                                .fill(Vinegar303Theme.track)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -882,7 +881,7 @@ struct Vinegar303PresetManagerView: View {
                     .frame(height: 26)
                     .background(
                         RoundedRectangle(cornerRadius: 5, style: .continuous)
-                            .fill(Color.white.opacity(0.04))
+                            .fill(Vinegar303Theme.controlFill)
                     )
                 }
             }
@@ -904,7 +903,7 @@ struct Vinegar303PresetManagerView: View {
                     .frame(height: 27)
                     .background(
                         RoundedRectangle(cornerRadius: 5, style: .continuous)
-                            .fill(Color.black.opacity(0.35))
+                            .fill(Vinegar303Theme.track)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -934,7 +933,7 @@ struct Vinegar303PresetManagerView: View {
             .buttonStyle(.plain)
             .font(.system(size: 8, weight: .bold, design: .monospaced))
             .tracking(0.8)
-            .foregroundStyle(Color.black)
+            .foregroundStyle(Vinegar303Theme.onAccent)
             .padding(.horizontal, 11)
             .frame(height: 27)
             .background(
@@ -1223,8 +1222,7 @@ struct Vinegar303PresetManagerView: View {
         .padding(.horizontal, 8)
         .frame(height: 26)
         .background(
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(Color.white.opacity(0.04))
+            RoundedRectangle(cornerRadius: 5, style: .continuous)                            .fill(Vinegar303Theme.controlFill)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -1251,7 +1249,7 @@ struct Vinegar303PresetManagerView: View {
             .frame(height: 24)
             .background(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .fill(Color.white.opacity(0.04))
+                    .fill(Vinegar303Theme.controlFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -1349,7 +1347,7 @@ struct Vinegar303PatternCopyView: View {
                     }
                     .buttonStyle(.plain)
                     .font(.system(size: 8, weight: .bold, design: .monospaced))
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Vinegar303Theme.onAccent)
                     .padding(.horizontal, 11)
                     .frame(height: 27)
                     .background(
@@ -1367,7 +1365,7 @@ struct Vinegar303PatternCopyView: View {
                     .frame(height: 27)
                     .background(
                         RoundedRectangle(cornerRadius: 5, style: .continuous)
-                            .fill(Color.white.opacity(0.05))
+                            .fill(Vinegar303Theme.controlFill)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -1383,7 +1381,6 @@ struct Vinegar303PatternCopyView: View {
         .padding(18)
         .frame(width: 590, height: 380)
         .background(Vinegar303Theme.background)
-        .preferredColorScheme(.dark)
         .alert(item: $notice) { notice in
             Alert(
                 title: Text(notice.title),

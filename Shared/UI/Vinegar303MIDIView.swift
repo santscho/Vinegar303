@@ -29,11 +29,11 @@ struct Vinegar303MIDILearnBadge: View {
         } label: {
             Text("L")
                 .font(.system(size: 7, weight: .black, design: .monospaced))
-                .foregroundStyle(isArmed ? Color.black : Vinegar303Theme.amber)
+                .foregroundStyle(isArmed ? Vinegar303Theme.onAccent : Vinegar303Theme.amber)
                 .frame(width: 14, height: 14)
                 .background(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .fill(isArmed ? Vinegar303Theme.amber : Color.black.opacity(0.72))
+                        .fill(isArmed ? Vinegar303Theme.amber : Vinegar303Theme.insetStrong)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
@@ -192,7 +192,7 @@ struct Vinegar303MIDIPanel: View {
                                 .fill(
                                     midi.learnBadgesVisible
                                         ? Vinegar303Theme.acid.opacity(0.10)
-                                        : Color.white.opacity(0.035)
+                                        : Vinegar303Theme.controlFillSubtle
                                 )
                         )
                         .overlay(
@@ -284,7 +284,7 @@ struct Vinegar303MIDIPanel: View {
                         .frame(minWidth: 110, maxWidth: 160, minHeight: 24)
                         .background(
                             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                .fill(Color.black.opacity(0.35))
+                                .fill(Vinegar303Theme.track)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -372,7 +372,7 @@ struct Vinegar303MIDIPanel: View {
                 .frame(height: 24)
                 .background(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(Color.white.opacity(0.04))
+                        .fill(Vinegar303Theme.controlFill)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
@@ -463,7 +463,7 @@ struct Vinegar303MIDIPanel: View {
         .padding(.vertical, 3)
         .background(
             RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .fill(Color.white.opacity(0.04))
+                .fill(Vinegar303Theme.controlFill)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 4, style: .continuous)

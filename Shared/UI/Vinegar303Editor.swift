@@ -8,6 +8,8 @@ struct Vinegar303Editor: View {
     @ObservedObject private var patterns: PatternStore
     @ObservedObject private var presets: Vinegar303PresetController
     @State private var showingPresetManager = false
+    @AppStorage(Vinegar303AppearanceMode.storageKey)
+    private var appearanceRawValue = Vinegar303AppearanceMode.system.rawValue
     private let playhead: (() -> Int)?
     private let midi: Vinegar303MIDIController?
 
@@ -37,6 +39,9 @@ struct Vinegar303Editor: View {
     private var isNoteMode: Bool { model.value(.midiMode) >= 0.5 }
     private var isScaleAware: Bool { model.value(.scaleEnable) >= 0.5 }
     private var isHalfSpeed: Bool { model.value(.halfSpeed) >= 0.5 }
+    private var appearanceMode: Vinegar303AppearanceMode {
+        Vinegar303AppearanceMode(rawValue: appearanceRawValue) ?? .system
+    }
 
     var body: some View {
         VStack(spacing: 14) {
@@ -75,10 +80,11 @@ struct Vinegar303Editor: View {
         .padding(16)
         .background(background)
         .frame(minWidth: 1_020, minHeight: 640)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(appearanceMode.colorScheme)
         .environment(\.vinegar303MIDIController, midi)
         .sheet(isPresented: $showingPresetManager) {
             Vinegar303PresetManagerView(presets: presets)
+                .preferredColorScheme(appearanceMode.colorScheme)
         }
     }
 
@@ -122,6 +128,13 @@ struct Vinegar303Editor: View {
                     .tracking(2.2)
                     .foregroundStyle(Vinegar303Theme.dim)
             }
+
+            Vinegar303AppearanceSwitcher(
+                selection: Binding(
+                    get: { appearanceMode },
+                    set: { appearanceRawValue = $0.rawValue }
+                )
+            )
 
             Spacer(minLength: 8)
 
