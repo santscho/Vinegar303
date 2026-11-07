@@ -190,28 +190,33 @@ public final class Vinegar303AudioUnit: AUAudioUnit {
     }
 
     private func observePatternSelection() {
-        patternObserverToken = parameterTreeStorage.token(byAddingParameterObserver: { [weak self] address, _ in
+        patternObserverToken = parameterTreeStorage.token(byAddingParameterObserver: { [weak self] address, value in
             guard address == Vinegar303Parameter.pattern.rawValue else { return }
-            DispatchQueue.main.async {
-                self?.synchronizePatternLength()
-            }
+            // Synchronize immediately: deferring this lets a queued update
+            // overwrite a host-set length after AU validation or automation.
+            // Use the callback value because the parameter still exposes the
+            // previous selection inside this notification.
+            self?.synchronizePatternLength(selectedIndex: Int(value.rounded()))
         })
+    }
+
+    private func selectedPatternIndex() -> Int {
+        let raw = Int((parameterTreeStorage.parameter(withAddress: Vinegar303Parameter.pattern.rawValue)?.value ?? 0).rounded())
+        return min(max(raw, 0), Vinegar303PatternLibrary.patternCount - 1)
     }
 
     /// Keep the active `patternLength` mirror aligned with the selected
     /// pattern. This matters when a host changes the pattern parameter without
     /// the editor being open.
-    private func synchronizePatternLength() {
-        let patterns = engine.patterns
+    private func synchronizePatternLength(selectedIndex: Int? = nil) {
         let index = min(
-            max(Int((parameterTreeStorage.parameter(withAddress: Vinegar303Parameter.pattern.rawValue)?.value ?? 0).rounded()), 0),
+            max(selectedIndex ?? selectedPatternIndex(), 0),
             Vinegar303PatternLibrary.patternCount - 1
         )
-        guard patterns.indices.contains(index),
+        guard let length = engine.patternLength(at: index),
               let lengthParameter = parameterTreeStorage.parameter(
                 withAddress: Vinegar303Parameter.patternLength.rawValue
               ) else { return }
-        let length = patterns[index].length
         guard Int(lengthParameter.value.rounded()) != length else { return }
         lengthParameter.value = AUValue(length)
         engine.setParameter(.patternLength, AUValue(length))

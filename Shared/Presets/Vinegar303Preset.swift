@@ -303,7 +303,7 @@ public enum Vinegar303PresetParameterGroups {
         .distortion,
         .drive,
         .halfSpeed,
-    ]
+    ] + Vinegar303FXSlot.allCases.flatMap { $0.parameters }
 
     /// Scale settings are stored separately so a future partial-save mode can
     /// combine them with patterns without copying the sound.

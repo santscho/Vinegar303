@@ -7,9 +7,9 @@ enum Vinegar303WindowMetrics {
     /// vertically without changing the horizontal canvas.
     static let nativeWidth: CGFloat = 1_300
     static let initialContentHeight: CGFloat = 900
-    /// The editor's top strip, including 15 px of additional breathing room
-    /// below the native traffic lights.
-    static let titlebarInset: CGFloat = 39
+    /// The editor's top strip below the native traffic lights. The editor's
+    /// own padding supplies the gap above its header.
+    static let titlebarInset: CGFloat = 9
 }
 
 struct Vinegar303HostView: View {

@@ -10,7 +10,7 @@ import Foundation
 /// - UI writes go through `setParameter` / `patterns` and are consumed on the
 ///   next render quantum.
 public final class Vinegar303Engine {
-    public static let maxParameters = 32
+    public static let maxParameters = 160
     public static let maxPatterns = Vinegar303PatternLibrary.patternCount
     public static let stepsPerPattern = Vinegar303PatternLibrary.stepsPerPattern
 
@@ -52,6 +52,8 @@ public final class Vinegar303Engine {
     private var filter = Vinegar303LadderFilter()
     private var filterEnvelope = Vinegar303DecayEnvelope()
     private var accentFilterEnvelope = Vinegar303DecayEnvelope()
+    private var delayUnits = Array(repeating: Vinegar303DelayUnit(), count: Vinegar303FXSlot.count)
+    private var delayUnitActive = Array(repeating: false, count: Vinegar303FXSlot.count)
 
     private var amplitude: Float = 0
     private var amplitudeAttackActive = false
@@ -125,6 +127,10 @@ public final class Vinegar303Engine {
         bankALengths.deallocate()
         bankBLengths.deinitialize(count: Self.maxPatterns)
         bankBLengths.deallocate()
+
+        for index in delayUnits.indices {
+            delayUnits[index].deallocate()
+        }
     }
 
     // MARK: Parameters
@@ -139,7 +145,9 @@ public final class Vinegar303Engine {
     }
 
     public func setParameter(_ id: Vinegar303Parameter, _ value: AUValue) {
-        parameterStorage[Int(id.rawValue)] = Vinegar303ParameterCatalog.spec(id).snapped(value)
+        let snapped = Vinegar303ParameterCatalog.spec(id).snapped(value)
+        parameterStorage[Int(id.rawValue)] = snapped
+        updateSelectedPatternLengthIfNeeded(id: id, value: snapped)
     }
 
     public func setParameter(address: AUParameterAddress, value: AUValue) {
@@ -147,7 +155,15 @@ public final class Vinegar303Engine {
         guard index > 0,
               index < Self.maxParameters,
               let id = Vinegar303Parameter(rawValue: address) else { return }
-        parameterStorage[index] = Vinegar303ParameterCatalog.spec(id).snapped(value)
+        let snapped = Vinegar303ParameterCatalog.spec(id).snapped(value)
+        parameterStorage[index] = snapped
+        updateSelectedPatternLengthIfNeeded(id: id, value: snapped)
+    }
+
+    private func updateSelectedPatternLengthIfNeeded(id: Vinegar303Parameter, value: AUValue) {
+        guard id == .patternLength else { return }
+        let patternIndex = Int(parameterStorage[Int(Vinegar303Parameter.pattern.rawValue)].rounded())
+        setActivePatternLength(Int(value.rounded()), at: patternIndex)
     }
 
     public func parameter(address: AUParameterAddress) -> AUValue {
@@ -188,6 +204,24 @@ public final class Vinegar303Engine {
         set {
             publishPatterns(newValue)
         }
+    }
+
+    /// Read the active bank's stored length without allocating. Used by the
+    /// parameter observer when the host changes the selected pattern.
+    public func patternLength(at index: Int) -> Int? {
+        guard index >= 0, index < Self.maxPatterns else { return nil }
+        let lengths = activeBank == 0 ? bankALengths : bankBLengths
+        return Int(lengths[index])
+    }
+
+    /// Update the active bank's stored length without reallocating. This keeps
+    /// a host-automated `patternLength` attached to the selected pattern so
+    /// state recall does not revert it.
+    public func setActivePatternLength(_ length: Int, at index: Int) {
+        guard index >= 0, index < Self.maxPatterns else { return }
+        let clamped = min(max(length, 1), Self.stepsPerPattern)
+        let lengths = activeBank == 0 ? bankALengths : bankBLengths
+        lengths[index] = Int32(clamped)
     }
 
     private func publishPatterns(_ newPatterns: [Vinegar303Pattern]) {
@@ -248,6 +282,11 @@ public final class Vinegar303Engine {
         driveHighPassState = 0
         dcInput = 0
         dcOutput = 0
+
+        for index in delayUnits.indices {
+            delayUnits[index].prepare(sampleRate: self.sampleRate)
+            delayUnitActive[index] = false
+        }
     }
 
     public func reset() {
@@ -485,18 +524,71 @@ public final class Vinegar303Engine {
             let accentGain = 1 + accentVCAValue * accentAmount * 6.0
             accentVCAValue *= accentVCADecayCoefficient
 
-            let gain = smoothedVolume * accentGain
-            sample *= amplitude * gain
+            // The delay chain sits after the VCA and distortion but before the
+            // master volume and final limiter. This keeps tails alive after
+            // note-off while still letting the output stage catch peaks.
+            sample *= amplitude * accentGain
 
             // DC blocker for the asymmetric waveshaper and envelope.
             let dcBlocked = sample - dcInput + 0.9995 * dcOutput
             dcInput = sample
             dcOutput = dcBlocked
 
-            let limited = tanhf(dcBlocked * 1.05) * 0.98
+            var left = dcBlocked
+            var right = dcBlocked
+
+            for rawSlot in 0..<Vinegar303FXSlot.count {
+                guard let slot = Vinegar303FXSlot(rawValue: rawSlot) else { continue }
+
+                let isActive = p(slot.parameter(.type)) >= 0.5
+                    && p(slot.parameter(.enabled)) >= 0.5
+                guard isActive else {
+                    if delayUnitActive[rawSlot] {
+                        delayUnits[rawSlot].reset()
+                        delayUnitActive[rawSlot] = false
+                    }
+                    continue
+                }
+                delayUnitActive[rawSlot] = true
+
+                let sync = p(slot.parameter(.sync)) >= 0.5
+                let divisionIndex = Int(
+                    vinegarClamp(
+                        p(slot.parameter(.division)).rounded(),
+                        0,
+                        AUValue(Vinegar303FXDivision.allCases.count - 1)
+                    )
+                )
+                let delaySeconds: Double
+                if sync {
+                    delaySeconds = Vinegar303FXDivision(rawValue: divisionIndex)?
+                        .seconds(tempo: baseTempo) ?? 0.25
+                } else {
+                    delaySeconds = Double(p(slot.parameter(.time))) / 1_000.0
+                }
+
+                let wetDry = delayUnits[rawSlot].process(
+                    inputLeft: left,
+                    inputRight: right,
+                    targetDelaySamples: Float(max(1.0, delaySeconds * sr)),
+                    feedback: min(max(p(slot.parameter(.feedback)) / 100.0, 0), 0.9),
+                    tone: min(max(p(slot.parameter(.tone)) / 100.0, 0), 1),
+                    mix: min(max(p(slot.parameter(.mix)) / 100.0, 0), 1),
+                    pingPong: p(slot.parameter(.pingPong)) >= 0.5
+                )
+                left = wetDry.left
+                right = wetDry.right
+            }
+
+            left *= smoothedVolume
+            right *= smoothedVolume
+
+            let limitedLeft = tanhf(left * 1.05) * 0.98
+            let limitedRight = tanhf(right * 1.05) * 0.98
 
             write(
-                sample: limited,
+                left: limitedLeft,
+                right: limitedRight,
                 buffers: buffers,
                 frameIndex: frameOffset + frame
             )
@@ -619,7 +711,8 @@ public final class Vinegar303Engine {
 
     @inline(__always)
     private func write(
-        sample: Float,
+        left: Float,
+        right: Float,
         buffers: UnsafeMutableAudioBufferListPointer,
         frameIndex: Int
     ) {
@@ -628,15 +721,17 @@ public final class Vinegar303Engine {
             let channels = Int(buffer.mNumberChannels)
             let data = raw.assumingMemoryBound(to: Float.self)
             let base = frameIndex * channels
-            data[base] = sample
-            data[base + 1] = sample
+            data[base] = left
+            if channels > 1 {
+                data[base + 1] = right
+            }
             return
         }
 
-        for buffer in buffers {
+        for (channel, buffer) in buffers.enumerated() {
             guard let raw = buffer.mData else { continue }
             let data = raw.assumingMemoryBound(to: Float.self)
-            data[frameIndex] = sample
+            data[frameIndex] = channel == 0 ? left : right
         }
     }
 
@@ -651,5 +746,133 @@ public final class Vinegar303Engine {
             let channels = max(Int(buffer.mNumberChannels), 1)
             memset(data + frameOffset * channels, 0, frames * channels * MemoryLayout<Float>.size)
         }
+    }
+}
+
+/// Stereo delay line with smoothed time, feedback and mix controls. The maximum
+/// delay capacity is allocated in `prepare`, never in the render block.
+struct Vinegar303DelayUnit {
+    private var leftBuffer: UnsafeMutablePointer<Float>?
+    private var rightBuffer: UnsafeMutablePointer<Float>?
+    private var capacity = 0
+    private var writeIndex = 0
+    private var sampleRate: Double = 44_100
+    private var smoothingCoefficient: Float = 0
+    private var smoothedDelaySamples: Float = 1
+    private var smoothedFeedback: Float = 0
+    private var smoothedTone: Float = 0
+    private var smoothedMix: Float = 0
+    private var toneStateLeft: Float = 0
+    private var toneStateRight: Float = 0
+
+    mutating func prepare(sampleRate: Double) {
+        self.sampleRate = max(sampleRate, 8_000)
+        let requiredCapacity = max(Int(self.sampleRate * 2.0) + 4, 8)
+
+        if capacity != requiredCapacity || leftBuffer == nil || rightBuffer == nil {
+            deallocate()
+            leftBuffer = .allocate(capacity: requiredCapacity)
+            leftBuffer?.initialize(repeating: 0, count: requiredCapacity)
+            rightBuffer = .allocate(capacity: requiredCapacity)
+            rightBuffer?.initialize(repeating: 0, count: requiredCapacity)
+            capacity = requiredCapacity
+        } else {
+            reset()
+        }
+
+        writeIndex = 0
+        smoothedDelaySamples = 1
+        smoothedFeedback = 0
+        smoothedTone = 0
+        smoothedMix = 0
+        toneStateLeft = 0
+        toneStateRight = 0
+        smoothingCoefficient = Float(1.0 - exp(-1.0 / (0.02 * self.sampleRate)))
+    }
+
+    mutating func reset() {
+        guard let leftBuffer, let rightBuffer, capacity > 0 else { return }
+        for index in 0..<capacity {
+            leftBuffer[index] = 0
+            rightBuffer[index] = 0
+        }
+        writeIndex = 0
+        smoothedDelaySamples = 1
+        smoothedFeedback = 0
+        smoothedTone = 0
+        smoothedMix = 0
+        toneStateLeft = 0
+        toneStateRight = 0
+    }
+
+    mutating func deallocate() {
+        leftBuffer?.deallocate()
+        rightBuffer?.deallocate()
+        leftBuffer = nil
+        rightBuffer = nil
+        capacity = 0
+    }
+
+    mutating func process(
+        inputLeft: Float,
+        inputRight: Float,
+        targetDelaySamples: Float,
+        feedback: Float,
+        tone: Float,
+        mix: Float,
+        pingPong: Bool
+    ) -> (left: Float, right: Float) {
+        guard let leftBuffer, let rightBuffer, capacity > 4 else {
+            return (inputLeft, inputRight)
+        }
+
+        let target = min(max(targetDelaySamples, 1), Float(capacity - 2))
+        smoothedDelaySamples += (target - smoothedDelaySamples) * smoothingCoefficient
+        smoothedFeedback += (feedback - smoothedFeedback) * smoothingCoefficient
+        smoothedTone += (tone - smoothedTone) * smoothingCoefficient
+        smoothedMix += (mix - smoothedMix) * smoothingCoefficient
+
+        let delay = min(max(smoothedDelaySamples, 1), Float(capacity - 2))
+        let readPosition = Float(writeIndex) - delay
+        var readIndex = Int(readPosition.rounded(.down))
+        let fraction = readPosition - Float(readIndex)
+        while readIndex < 0 { readIndex += capacity }
+        if readIndex >= capacity { readIndex -= capacity }
+        let nextIndex = readIndex + 1 == capacity ? 0 : readIndex + 1
+
+        let wetLeft = leftBuffer[readIndex]
+            + (leftBuffer[nextIndex] - leftBuffer[readIndex]) * fraction
+        let wetRight = rightBuffer[readIndex]
+            + (rightBuffer[nextIndex] - rightBuffer[readIndex]) * fraction
+
+        // A simple one-pole low-pass in the feedback path. Higher tone values
+        // keep more high-frequency content in the repeats.
+        let toneCoefficient = 0.02 + smoothedTone * 0.9
+        toneStateLeft += (wetLeft - toneStateLeft) * toneCoefficient
+        toneStateRight += (wetRight - toneStateRight) * toneCoefficient
+
+        let feedbackLeft = toneStateLeft * smoothedFeedback
+        let feedbackRight = toneStateRight * smoothedFeedback
+
+        if pingPong {
+            // Sum both channels into one side, then cross the feedback so
+            // repeats alternate between the channels without dropping input.
+            let monoInput = (inputLeft + inputRight) * 0.5
+            leftBuffer[writeIndex] = monoInput + feedbackRight
+            rightBuffer[writeIndex] = feedbackLeft
+        } else {
+            leftBuffer[writeIndex] = inputLeft + feedbackLeft
+            rightBuffer[writeIndex] = inputRight + feedbackRight
+        }
+
+        writeIndex += 1
+        if writeIndex >= capacity { writeIndex = 0 }
+
+        let dryGain = 1 - smoothedMix
+        let wetGain = smoothedMix
+        return (
+            left: inputLeft * dryGain + wetLeft * wetGain,
+            right: inputRight * dryGain + wetRight * wetGain
+        )
     }
 }

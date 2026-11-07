@@ -1,5 +1,6 @@
 import AudioToolbox
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Complete plug-in editor. Used verbatim inside the AUv3 extension and by the
 /// host wrapper application.
@@ -8,6 +9,8 @@ struct Vinegar303Editor: View {
     @ObservedObject private var patterns: PatternStore
     @ObservedObject private var presets: Vinegar303PresetController
     @State private var showingPresetManager = false
+    @State private var selectedFXSlot: Int?
+    @State private var draggingFXSlot: Int?
     @AppStorage(Vinegar303AppearanceMode.storageKey)
     private var appearanceRawValue = Vinegar303AppearanceMode.system.rawValue
     private let playhead: (() -> Int)?
@@ -67,6 +70,8 @@ struct Vinegar303Editor: View {
             HStack(alignment: .top, spacing: 14) {
                 scalePanel
                     .frame(maxWidth: .infinity)
+                fxPanel
+                    .frame(width: 500)
                 outputPanel
                     .frame(maxWidth: .infinity)
             }
@@ -249,7 +254,7 @@ struct Vinegar303Editor: View {
                 Vinegar303ParameterKnob(model: model, id: .distortion, accent: Vinegar303Theme.amber)
                 Vinegar303ParameterKnob(model: model, id: .drive, accent: Vinegar303Theme.amber)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: 126, alignment: .topLeading)
         }
     }
 
@@ -312,8 +317,271 @@ struct Vinegar303Editor: View {
             }
             // Match the labeled tuning knob in VOICE so the paired panels
             // share the same height while keeping their controls horizontal.
-            .frame(maxWidth: .infinity, minHeight: 82)
+            .frame(maxWidth: .infinity, minHeight: 126)
         }
+    }
+
+    // MARK: FX
+
+    private var activeFXSlots: [Vinegar303FXSlot] {
+        model.fxActiveSlots
+    }
+
+    private var selectedFX: Vinegar303FXSlot? {
+        let active = activeFXSlots
+        if let raw = selectedFXSlot,
+           let slot = Vinegar303FXSlot(rawValue: raw),
+           active.contains(slot) {
+            return slot
+        }
+        return active.first
+    }
+
+    private var fxPanel: some View {
+        Vinegar303Panel("FX", accent: Vinegar303Theme.cyan) {
+            VStack(alignment: .leading, spacing: 8) {
+                fxChain
+                if let selected = selectedFX {
+                    fxParameterDrawer(selected)
+                } else {
+                    Text("ADD AN EFFECT TO THE CHAIN")
+                        .font(Vinegar303Theme.monoSmall)
+                        .tracking(0.8)
+                        .foregroundStyle(Vinegar303Theme.faint)
+                        .frame(maxWidth: .infinity, minHeight: 96, alignment: .topLeading)
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 126, alignment: .topLeading)
+        }
+    }
+
+    private var fxChain: some View {
+        HStack(spacing: 4) {
+            if activeFXSlots.isEmpty {
+                Text("NO EFFECTS")
+                    .font(Vinegar303Theme.monoSmall)
+                    .tracking(0.8)
+                    .foregroundStyle(Vinegar303Theme.faint)
+                addFXMenu(showLabel: true)
+            } else {
+                ForEach(activeFXSlots) { slot in
+                    if let index = activeFXSlots.firstIndex(of: slot), index > 0 {
+                        fxChainArrow
+                    }
+                    fxChip(slot)
+                }
+
+                fxChainArrow
+                addFXMenu(showLabel: false)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var fxChainArrow: some View {
+        Image(systemName: "chevron.right")
+            .font(.system(size: 7, weight: .bold))
+            .foregroundStyle(Vinegar303Theme.faint)
+    }
+
+    private func fxChip(_ slot: Vinegar303FXSlot) -> some View {
+        let isSelected = selectedFX == slot
+        let isEnabled = model.value(slot.parameter(.enabled)) >= 0.5
+        let effectType = model.fxEffectType(for: slot)
+
+        return HStack(spacing: 3) {
+            Toggle("", isOn: Binding(
+                get: { model.value(slot.parameter(.enabled)) >= 0.5 },
+                set: { model.setValueWithGesture($0 ? 1 : 0, for: slot.parameter(.enabled)) }
+            ))
+            .labelsHidden()
+            .toggleStyle(.switch)
+            .controlSize(.mini)
+            .tint(Vinegar303Theme.cyan)
+            .help("Turn \(effectType.title) \(isEnabled ? "off" : "on")")
+
+            Text(effectType.title.uppercased())
+                .font(Vinegar303Theme.monoSmall)
+                .tracking(0.6)
+                .foregroundStyle(isEnabled ? Vinegar303Theme.text : Vinegar303Theme.faint)
+
+            Button {
+                removeFX(slot)
+            } label: {
+                Image(systemName: "minus")
+                    .font(.system(size: 7, weight: .bold))
+                    .foregroundStyle(Vinegar303Theme.faint)
+                    .frame(width: 13, height: 15)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Remove \(effectType.title)")
+
+            Image(systemName: "line.3.horizontal")
+                .font(.system(size: 7, weight: .bold))
+                .foregroundStyle(Vinegar303Theme.faint)
+                .frame(width: 10, height: 15)
+                .contentShape(Rectangle())
+                .help("Drag to reorder")
+                .onDrag {
+                    draggingFXSlot = slot.rawValue
+                    return NSItemProvider(object: NSString(string: "\(slot.rawValue)"))
+                }
+        }
+        .padding(.horizontal, 4)
+        .padding(.vertical, 3)
+        .background(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(isSelected ? Vinegar303Theme.cyan.opacity(0.14) : Vinegar303Theme.controlFillSubtle)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .stroke(isSelected ? Vinegar303Theme.cyan.opacity(0.55) : Vinegar303Theme.border, lineWidth: 1)
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            selectedFXSlot = slot.rawValue
+        }
+        .onDrop(
+            of: [.text],
+            delegate: Vinegar303FXDropDelegate(
+                target: slot,
+                model: model,
+                dragging: $draggingFXSlot
+            )
+        )
+    }
+
+    private func addFXMenu(showLabel: Bool) -> some View {
+        Menu {
+            Button("Delay") {
+                addDelay()
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "plus")
+                    .font(.system(size: 8, weight: .bold))
+                if showLabel {
+                    Text("ADD EFFECT")
+                        .font(Vinegar303Theme.monoSmall)
+                        .tracking(0.8)
+                }
+            }
+            .foregroundStyle(Vinegar303Theme.cyan)
+            .padding(.horizontal, showLabel ? 7 : 4)
+            .frame(height: 22)
+            .background(
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .fill(Vinegar303Theme.cyan.opacity(0.10))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .stroke(Vinegar303Theme.cyan.opacity(0.35), lineWidth: 1)
+            )
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .disabled(activeFXSlots.count >= Vinegar303FXSlot.count)
+        .help(
+            activeFXSlots.count >= Vinegar303FXSlot.count
+                ? "Maximum \(Vinegar303FXSlot.count) effects"
+                : "Add an effect"
+        )
+    }
+
+    private func fxParameterDrawer(_ slot: Vinegar303FXSlot) -> some View {
+        let sync = model.value(slot.parameter(.sync)) >= 0.5
+
+        return HStack(alignment: .top, spacing: 7) {
+            fxKnob(slot.parameter(.time), label: "TIME", accent: Vinegar303Theme.cyan)
+                .opacity(sync ? 0.35 : 1)
+                .allowsHitTesting(!sync)
+                .help(sync ? "Time is set by the host-synced division" : "Delay time")
+
+            fxKnob(slot.parameter(.feedback), label: "FEEDBACK", accent: Vinegar303Theme.cyan)
+            fxKnob(slot.parameter(.tone), label: "TONE", accent: Vinegar303Theme.cyan)
+            fxKnob(slot.parameter(.mix), label: "MIX", accent: Vinegar303Theme.cyan)
+
+            VStack(alignment: .leading, spacing: 6) {
+                // Keep the chip block within the drawer's 96 px height. Three
+                // stacked chips are taller than the drawer and paint over the
+                // panel border, so SYNC and DIVISION share the first row.
+                HStack(spacing: 6) {
+                    Vinegar303Chip(
+                        caption: "SYNC",
+                        value: sync ? "HOST" : "FREE",
+                        accent: Vinegar303Theme.cyan,
+                        isActive: sync
+                    ) {
+                        model.toggle(slot.parameter(.sync))
+                    }
+
+                    Vinegar303MenuChip(
+                        caption: "DIVISION",
+                        value: model.displayValue(slot.parameter(.division)),
+                        accent: Vinegar303Theme.cyan,
+                        isActive: sync,
+                        options: Vinegar303FXDivision.allCases.map(\.title),
+                        selectedIndex: Int(model.value(slot.parameter(.division)).rounded())
+                    ) { index in
+                        model.setValueWithGesture(
+                            AUValue(index),
+                            for: slot.parameter(.division)
+                        )
+                    }
+                    .opacity(sync ? 1 : 0.45)
+                    .allowsHitTesting(sync)
+                }
+
+                Vinegar303Chip(
+                    caption: "PING-PONG",
+                    value: model.value(slot.parameter(.pingPong)) >= 0.5 ? "ON" : "OFF",
+                    accent: Vinegar303Theme.cyan,
+                    isActive: model.value(slot.parameter(.pingPong)) >= 0.5
+                ) {
+                    model.toggle(slot.parameter(.pingPong))
+                }
+            }
+        }
+        .frame(height: 96, alignment: .topLeading)
+    }
+
+    private func fxKnob(
+        _ id: Vinegar303Parameter,
+        label: String,
+        accent: Color
+    ) -> some View {
+        let spec = Vinegar303ParameterCatalog.spec(id)
+        return Vinegar303Knob(
+            label: label,
+            valueText: model.displayValue(id),
+            normalized: Binding(
+                get: { model.normalized(id) },
+                set: { model.setNormalized($0, for: id) }
+            ),
+            defaultNormalized: spec.normalized(spec.defaultValue),
+            accent: accent,
+            size: 44,
+            onEditingChanged: { editing in
+                if editing {
+                    model.beginGesture(id)
+                } else {
+                    model.endGesture(id)
+                }
+            }
+        )
+    }
+
+    private func addDelay() {
+        guard let slot = model.addFX(.delay) else { return }
+        selectedFXSlot = slot.rawValue
+    }
+
+    private func removeFX(_ slot: Vinegar303FXSlot) {
+        model.removeFX(slot)
+        selectedFXSlot = model.fxActiveSlots.first?.rawValue
     }
 
     // MARK: Footer
@@ -344,5 +612,31 @@ struct Vinegar303Editor: View {
                 .foregroundStyle(Vinegar303Theme.faint)
         }
         .padding(.top, 2)
+    }
+}
+
+private struct Vinegar303FXDropDelegate: DropDelegate {
+    let target: Vinegar303FXSlot
+    let model: ParameterModel
+    @Binding var dragging: Int?
+
+    func dropEntered(info: DropInfo) {
+        guard let dragging,
+              dragging != target.rawValue,
+              let source = Vinegar303FXSlot(rawValue: dragging)
+        else { return }
+
+        let active = model.fxActiveSlots
+        guard let sourceIndex = active.firstIndex(of: source),
+              let destinationIndex = active.firstIndex(of: target)
+        else { return }
+
+        model.moveFX(from: sourceIndex, to: destinationIndex)
+        self.dragging = target.rawValue
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        dragging = nil
+        return true
     }
 }

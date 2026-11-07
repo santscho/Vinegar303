@@ -126,6 +126,94 @@ final class ParameterModel: ObservableObject {
     }
 }
 
+// MARK: - FX chain
+
+extension ParameterModel {
+    var fxActiveSlots: [Vinegar303FXSlot] {
+        Vinegar303FXSlot.allCases.filter { fxEffectType(for: $0) != .none }
+    }
+
+    func fxEffectType(for slot: Vinegar303FXSlot) -> Vinegar303FXEffectType {
+        Vinegar303FXEffectType(
+            rawValue: Int(value(slot.parameter(.type)).rounded())
+        ) ?? .none
+    }
+
+    @discardableResult
+    func addFX(_ type: Vinegar303FXEffectType = .delay) -> Vinegar303FXSlot? {
+        guard type != .none,
+              let slot = Vinegar303FXSlot.allCases.first(where: { fxEffectType(for: $0) == .none })
+        else { return nil }
+
+        for control in Vinegar303FXControl.allCases {
+            let id = slot.parameter(control)
+            let spec = Vinegar303ParameterCatalog.spec(id)
+            let newValue: AUValue
+            switch control {
+            case .type:
+                newValue = AUValue(type.rawValue)
+            case .enabled:
+                newValue = 1
+            default:
+                newValue = spec.defaultValue
+            }
+            setValue(newValue, for: id)
+        }
+        return slot
+    }
+
+    func removeFX(_ slot: Vinegar303FXSlot) {
+        guard fxEffectType(for: slot) != .none else { return }
+        var states = fxActiveSlots.map { fxState(for: $0) }
+        guard let index = fxActiveSlots.firstIndex(of: slot) else { return }
+        states.remove(at: index)
+        write(states: states)
+    }
+
+    func moveFX(from sourceIndex: Int, to destinationIndex: Int) {
+        let active = fxActiveSlots
+        guard active.indices.contains(sourceIndex),
+              active.indices.contains(destinationIndex),
+              sourceIndex != destinationIndex
+        else { return }
+
+        var states = active.map { fxState(for: $0) }
+        let moved = states.remove(at: sourceIndex)
+        states.insert(moved, at: destinationIndex)
+        write(states: states)
+    }
+
+    private func fxState(for slot: Vinegar303FXSlot) -> [Vinegar303FXControl: AUValue] {
+        Dictionary(
+            uniqueKeysWithValues: Vinegar303FXControl.allCases.map {
+                ($0, value(slot.parameter($0)))
+            }
+        )
+    }
+
+    private func write(states: [[Vinegar303FXControl: AUValue]]) {
+        for (index, slot) in Vinegar303FXSlot.allCases.enumerated() {
+            let state = states.indices.contains(index) ? states[index] : nil
+            for control in Vinegar303FXControl.allCases {
+                let id = slot.parameter(control)
+                let spec = Vinegar303ParameterCatalog.spec(id)
+                let newValue: AUValue
+                if let state {
+                    newValue = state[control] ?? spec.defaultValue
+                } else {
+                    switch control {
+                    case .type, .enabled:
+                        newValue = 0
+                    default:
+                        newValue = spec.defaultValue
+                    }
+                }
+                setValue(newValue, for: id)
+            }
+        }
+    }
+}
+
 /// Local, observable copy of the sequencer data. Edits are pushed back into the
 /// audio unit (which publishes them to its double-buffered pattern bank).
 final class PatternStore: ObservableObject {
