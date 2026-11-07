@@ -18,6 +18,22 @@
 - Undo bad changes with `git revert <commit-hash>`, never `git reset --hard`,
   so history stays intact and the revert is reviewable.
 
+## Agent collaboration
+
+- Agent work runs under the GitHub machine account `buffy-agent` (id `353771289`,
+  Write collaborator), never under the maintainer account.
+- Authenticate the CLI as that account only: `gh auth switch --user buffy-agent`, and verify with
+  `gh api user --jq .login` before any write. The account owns no repositories and holds
+  `admin:false`: it can open, comment on and merge pull requests but cannot change repository
+  settings, branch protection or collaborators.
+- Keep the credential in the macOS keychain (`gh auth login --with-token`), never in a file inside
+  the repository. This repository pins `credential.https://github.com.helper` to
+  `!gh auth git-credential` so pushes use the active account instead of a cached keychain entry.
+- Sign agent commits with the machine account's noreply address while leaving the repository
+  default identity untouched, so the maintainer's own commits keep their authorship:
+  `git -c user.name=Buffy -c user.email=353771289+buffy-agent@users.noreply.github.com commit`.
+- Never force-push, rewrite published history or push directly to `main`; open a pull request.
+
 ## UI conventions
 
 - Keep labels consistent between the standalone app and the AUv3 editor.
