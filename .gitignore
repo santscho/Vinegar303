@@ -3,5 +3,6 @@
 build/
 DerivedData/
 *.xcuserstate
+dist/
 xcuserdata/
 .scratch/

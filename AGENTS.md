@@ -1,5 +1,23 @@
 # Project Instructions
 
+## Git and GitHub workflow
+
+- `main` is protected: never commit or push feature work, fixes or refactors directly to it.
+- Start every feature, bug fix or refactor on a branch named `feature/<feature-name>`
+  (for example `feature/scale-aware-generator`, `feature/half-speed-toggle`).
+- Push that branch with `git push -u origin feature/<feature-name>` and open a pull request
+  into `main` instead of merging locally.
+- Commit messages are descriptive and typed, for example
+  `feat: implement 1/2 speed step-accumulator DSP logic` or
+  `fix: keep per-pattern length inside the 1-16 step range`.
+  Never use `update files`, `auto-push` or other generic summaries.
+- Tag validated milestones with semver, for example
+  `git tag -a v1.0.0 -m "Release v1.0.0 - Stable Standalone & AUv2 Build"`,
+  then `git push origin v1.0.0`. A milestone qualifies once `auval -v aumu Vg03 Vngr`
+  passes or a standalone release build succeeds.
+- Undo bad changes with `git revert <commit-hash>`, never `git reset --hard`,
+  so history stays intact and the revert is reviewable.
+
 ## UI conventions
 
 - Keep labels consistent between the standalone app and the AUv3 editor.
