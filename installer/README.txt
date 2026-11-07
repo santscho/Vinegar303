@@ -1,4 +1,4 @@
-Vinegar303 1.0 - macOS installer
+Vinegar303 1.1.0 - macOS installer
 
 Requirements: macOS 13 or newer, Apple Silicon or Intel.
 
@@ -10,7 +10,7 @@ AUTOMATED INSTALL
 2. Double-click Install.command.
 3. If macOS blocks the script, open Terminal and run:
 
-   bash "/Volumes/Vinegar303 1.0/Install.command"
+   bash "/Volumes/Vinegar303 1.1.0/Install.command"
 
    Adjust the volume name if you renamed the mounted disk image.
 4. The script installs to ~/Applications, removes the download quarantine,
