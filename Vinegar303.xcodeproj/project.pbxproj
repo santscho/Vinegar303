@@ -1,0 +1,592 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AC0000000000000000000001 /* Vinegar303Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000001 /* Vinegar303Types.swift */; };
+		AC0000000000000000000002 /* Vinegar303Oscillator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000002 /* Vinegar303Oscillator.swift */; };
+		AC0000000000000000000003 /* Vinegar303LadderFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000003 /* Vinegar303LadderFilter.swift */; };
+		AC0000000000000000000004 /* Vinegar303Envelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000004 /* Vinegar303Envelope.swift */; };
+		AC0000000000000000000005 /* Vinegar303Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000005 /* Vinegar303Engine.swift */; };
+		AC0000000000000000000006 /* Vinegar303Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000006 /* Vinegar303Parameters.swift */; };
+		AC0000000000000000000007 /* Vinegar303AudioUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000007 /* Vinegar303AudioUnit.swift */; };
+		AC0000000000000000000008 /* ParameterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000008 /* ParameterModel.swift */; };
+		AC0000000000000000000009 /* Vinegar303AUViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000009 /* Vinegar303AUViewController.swift */; };
+		AC000000000000000000000A /* Vinegar303Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000A /* Vinegar303Theme.swift */; };
+		AC000000000000000000000B /* Vinegar303Knob.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000B /* Vinegar303Knob.swift */; };
+		AC000000000000000000000C /* Vinegar303SequencerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000C /* Vinegar303SequencerView.swift */; };
+		AC000000000000000000000D /* Vinegar303Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000D /* Vinegar303Editor.swift */; };
+		AC000000000000000000000E /* Vinegar303App.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000E /* Vinegar303App.swift */; };
+		AC000000000000000000000F /* Vinegar303Host.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000F /* Vinegar303Host.swift */; };
+		AC0000000000000000000010 /* HostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000010 /* HostView.swift */; };
+		AC0000000000000000000012 /* Vinegar303Scale.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000016 /* Vinegar303Scale.swift */; };
+		AC0000000000000000000013 /* Vinegar303Preset.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000017 /* Vinegar303Preset.swift */; };
+		AC0000000000000000000014 /* Vinegar303PresetLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000018 /* Vinegar303PresetLibrary.swift */; };
+		AC0000000000000000000015 /* Vinegar303PresetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000019 /* Vinegar303PresetController.swift */; };
+		AC0000000000000000000016 /* Vinegar303PresetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001A /* Vinegar303PresetView.swift */; };
+		AC0000000000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001B /* Assets.xcassets */; };
+		AC0000000000000000000018 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001C /* AppIcon.icns */; };
+		AC0000000000000000000019 /* Vinegar303MIDI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001D /* Vinegar303MIDI.swift */; };
+		AC000000000000000000001A /* Vinegar303MIDIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001F /* Vinegar303MIDIView.swift */; };
+		AC000000000000000000001B /* CoreMIDIInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001E /* CoreMIDIInput.swift */; };
+		AC000000000000000000001C /* Vinegar303BundledContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000020 /* Vinegar303BundledContent.swift */; };
+		AC000000000000000000001D /* Content in Resources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000021 /* Content */; };
+		AC0000000000000000000011 /* Vinegar303Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000015 /* Vinegar303Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AD0000000000000000000001 /* Vinegar303Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000001 /* Vinegar303Types.swift */; };
+		AD0000000000000000000002 /* Vinegar303Oscillator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000002 /* Vinegar303Oscillator.swift */; };
+		AD0000000000000000000003 /* Vinegar303LadderFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000003 /* Vinegar303LadderFilter.swift */; };
+		AD0000000000000000000004 /* Vinegar303Envelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000004 /* Vinegar303Envelope.swift */; };
+		AD0000000000000000000005 /* Vinegar303Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000005 /* Vinegar303Engine.swift */; };
+		AD0000000000000000000006 /* Vinegar303Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000006 /* Vinegar303Parameters.swift */; };
+		AD0000000000000000000007 /* Vinegar303AudioUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000007 /* Vinegar303AudioUnit.swift */; };
+		AD0000000000000000000008 /* ParameterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000008 /* ParameterModel.swift */; };
+		AD0000000000000000000009 /* Vinegar303AUViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000009 /* Vinegar303AUViewController.swift */; };
+		AD000000000000000000000A /* Vinegar303Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000A /* Vinegar303Theme.swift */; };
+		AD000000000000000000000B /* Vinegar303Knob.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000B /* Vinegar303Knob.swift */; };
+		AD000000000000000000000C /* Vinegar303SequencerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000C /* Vinegar303SequencerView.swift */; };
+		AD000000000000000000000D /* Vinegar303Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000000D /* Vinegar303Editor.swift */; };
+		AD000000000000000000000E /* Vinegar303Scale.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000016 /* Vinegar303Scale.swift */; };
+		AD000000000000000000000F /* Vinegar303Preset.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000017 /* Vinegar303Preset.swift */; };
+		AD0000000000000000000010 /* Vinegar303PresetLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000018 /* Vinegar303PresetLibrary.swift */; };
+		AD0000000000000000000011 /* Vinegar303PresetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000019 /* Vinegar303PresetController.swift */; };
+		AD0000000000000000000012 /* Vinegar303PresetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001A /* Vinegar303PresetView.swift */; };
+		AD0000000000000000000013 /* Vinegar303MIDI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001D /* Vinegar303MIDI.swift */; };
+		AD0000000000000000000014 /* Vinegar303MIDIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001F /* Vinegar303MIDIView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B00000000000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF0000000000000000000002;
+			remoteInfo = Vinegar303Extension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AE0000000000000000000004 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AC0000000000000000000011 /* Vinegar303Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		AB0000000000000000000001 /* Vinegar303Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Types.swift; sourceTree = "<group>"; };
+		AB0000000000000000000002 /* Vinegar303Oscillator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Oscillator.swift; sourceTree = "<group>"; };
+		AB0000000000000000000003 /* Vinegar303LadderFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303LadderFilter.swift; sourceTree = "<group>"; };
+		AB0000000000000000000004 /* Vinegar303Envelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Envelope.swift; sourceTree = "<group>"; };
+		AB0000000000000000000005 /* Vinegar303Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Engine.swift; sourceTree = "<group>"; };
+		AB0000000000000000000006 /* Vinegar303Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Parameters.swift; sourceTree = "<group>"; };
+		AB0000000000000000000007 /* Vinegar303AudioUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303AudioUnit.swift; sourceTree = "<group>"; };
+		AB0000000000000000000008 /* ParameterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterModel.swift; sourceTree = "<group>"; };
+		AB0000000000000000000009 /* Vinegar303AUViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303AUViewController.swift; sourceTree = "<group>"; };
+		AB000000000000000000000A /* Vinegar303Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Theme.swift; sourceTree = "<group>"; };
+		AB000000000000000000000B /* Vinegar303Knob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Knob.swift; sourceTree = "<group>"; };
+		AB000000000000000000000C /* Vinegar303SequencerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303SequencerView.swift; sourceTree = "<group>"; };
+		AB000000000000000000000D /* Vinegar303Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Editor.swift; sourceTree = "<group>"; };
+		AB000000000000000000000E /* Vinegar303App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303App.swift; sourceTree = "<group>"; };
+		AB000000000000000000000F /* Vinegar303Host.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Host.swift; sourceTree = "<group>"; };
+		AB0000000000000000000010 /* HostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostView.swift; sourceTree = "<group>"; };
+		AB0000000000000000000011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AB0000000000000000000012 /* Vinegar303Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Vinegar303Extension.entitlements; sourceTree = "<group>"; };
+		AB0000000000000000000013 /* Vinegar303.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Vinegar303.entitlements; sourceTree = "<group>"; };
+		AB0000000000000000000014 /* Vinegar303.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vinegar303.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB0000000000000000000015 /* Vinegar303Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Vinegar303Extension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB0000000000000000000016 /* Vinegar303Scale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Scale.swift; sourceTree = "<group>"; };
+		AB0000000000000000000017 /* Vinegar303Preset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303Preset.swift; sourceTree = "<group>"; };
+		AB0000000000000000000018 /* Vinegar303PresetLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303PresetLibrary.swift; sourceTree = "<group>"; };
+		AB0000000000000000000019 /* Vinegar303PresetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303PresetController.swift; sourceTree = "<group>"; };
+		AB000000000000000000001A /* Vinegar303PresetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303PresetView.swift; sourceTree = "<group>"; };
+		AB000000000000000000001B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AB000000000000000000001C /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		AB000000000000000000001D /* Vinegar303MIDI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303MIDI.swift; sourceTree = "<group>"; };
+		AB000000000000000000001E /* CoreMIDIInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMIDIInput.swift; sourceTree = "<group>"; };
+		AB000000000000000000001F /* Vinegar303MIDIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303MIDIView.swift; sourceTree = "<group>"; };
+		AB0000000000000000000020 /* Vinegar303BundledContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vinegar303BundledContent.swift; sourceTree = "<group>"; };
+		AB0000000000000000000021 /* Content */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Content; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AE0000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AE0000000000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA0000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000008 /* Vinegar303 */,
+				AA0000000000000000000009 /* Vinegar303Extension */,
+				AA0000000000000000000004 /* Shared */,
+				AB0000000000000000000021 /* Content */,
+				AA0000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AB0000000000000000000014 /* Vinegar303.app */,
+				AB0000000000000000000015 /* Vinegar303Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000004 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000005 /* DSP */,
+				AA0000000000000000000006 /* AU */,
+				AA000000000000000000000A /* Presets */,
+				AA000000000000000000000B /* MIDI */,
+				AA0000000000000000000007 /* UI */,
+				AB0000000000000000000020 /* Vinegar303BundledContent.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000005 /* DSP */ = {
+			isa = PBXGroup;
+			children = (
+				AB0000000000000000000001 /* Vinegar303Types.swift */,
+				AB0000000000000000000002 /* Vinegar303Oscillator.swift */,
+				AB0000000000000000000003 /* Vinegar303LadderFilter.swift */,
+				AB0000000000000000000004 /* Vinegar303Envelope.swift */,
+				AB0000000000000000000005 /* Vinegar303Engine.swift */,
+				AB0000000000000000000016 /* Vinegar303Scale.swift */,
+			);
+			path = DSP;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000006 /* AU */ = {
+			isa = PBXGroup;
+			children = (
+				AB0000000000000000000006 /* Vinegar303Parameters.swift */,
+				AB0000000000000000000007 /* Vinegar303AudioUnit.swift */,
+				AB0000000000000000000008 /* ParameterModel.swift */,
+				AB0000000000000000000009 /* Vinegar303AUViewController.swift */,
+			);
+			path = AU;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000007 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				AB000000000000000000000A /* Vinegar303Theme.swift */,
+				AB000000000000000000000B /* Vinegar303Knob.swift */,
+				AB000000000000000000000C /* Vinegar303SequencerView.swift */,
+				AB000000000000000000000D /* Vinegar303Editor.swift */,
+				AB000000000000000000001A /* Vinegar303PresetView.swift */,
+				AB000000000000000000001F /* Vinegar303MIDIView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		AA000000000000000000000A /* Presets */ = {
+			isa = PBXGroup;
+			children = (
+				AB0000000000000000000017 /* Vinegar303Preset.swift */,
+				AB0000000000000000000018 /* Vinegar303PresetLibrary.swift */,
+				AB0000000000000000000019 /* Vinegar303PresetController.swift */,
+			);
+			path = Presets;
+			sourceTree = "<group>";
+		};
+		AA000000000000000000000B /* MIDI */ = {
+			isa = PBXGroup;
+			children = (
+				AB000000000000000000001D /* Vinegar303MIDI.swift */,
+			);
+			path = MIDI;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000008 /* Vinegar303 */ = {
+			isa = PBXGroup;
+			children = (
+				AB000000000000000000000E /* Vinegar303App.swift */,
+				AB000000000000000000000F /* Vinegar303Host.swift */,
+				AB0000000000000000000010 /* HostView.swift */,
+				AB000000000000000000001E /* CoreMIDIInput.swift */,
+				AB0000000000000000000013 /* Vinegar303.entitlements */,
+				AB000000000000000000001B /* Assets.xcassets */,
+				AB000000000000000000001C /* AppIcon.icns */,
+			);
+			path = Vinegar303;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000009 /* Vinegar303Extension */ = {
+			isa = PBXGroup;
+			children = (
+				AB0000000000000000000011 /* Info.plist */,
+				AB0000000000000000000012 /* Vinegar303Extension.entitlements */,
+			);
+			path = Vinegar303Extension;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AF0000000000000000000001 /* Vinegar303 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000002 /* Build configuration list for PBXNativeTarget "Vinegar303" */;
+			buildPhases = (
+				AE0000000000000000000001 /* Sources */,
+				AE0000000000000000000002 /* Frameworks */,
+				AE0000000000000000000003 /* Resources */,
+				AE0000000000000000000004 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B00000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = Vinegar303;
+			productName = Vinegar303;
+			productReference = AB0000000000000000000014 /* Vinegar303.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AF0000000000000000000002 /* Vinegar303Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000003 /* Build configuration list for PBXNativeTarget "Vinegar303Extension" */;
+			buildPhases = (
+				AE0000000000000000000005 /* Sources */,
+				AE0000000000000000000006 /* Frameworks */,
+				AE0000000000000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Vinegar303Extension;
+			productName = Vinegar303Extension;
+			productReference = AB0000000000000000000015 /* Vinegar303Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA0000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					AF0000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					AF0000000000000000000002 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = B10000000000000000000001 /* Build configuration list for PBXProject "Vinegar303" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA0000000000000000000002;
+			productRefGroup = AA0000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AF0000000000000000000001 /* Vinegar303 */,
+				AF0000000000000000000002 /* Vinegar303Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AE0000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC0000000000000000000017 /* Assets.xcassets in Resources */,
+				AC0000000000000000000018 /* AppIcon.icns in Resources */,
+				AC000000000000000000001D /* Content in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AE0000000000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AE0000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC0000000000000000000001 /* Vinegar303Types.swift in Sources */,
+				AC0000000000000000000002 /* Vinegar303Oscillator.swift in Sources */,
+				AC0000000000000000000003 /* Vinegar303LadderFilter.swift in Sources */,
+				AC0000000000000000000004 /* Vinegar303Envelope.swift in Sources */,
+				AC0000000000000000000005 /* Vinegar303Engine.swift in Sources */,
+				AC0000000000000000000006 /* Vinegar303Parameters.swift in Sources */,
+				AC0000000000000000000007 /* Vinegar303AudioUnit.swift in Sources */,
+				AC0000000000000000000008 /* ParameterModel.swift in Sources */,
+				AC0000000000000000000009 /* Vinegar303AUViewController.swift in Sources */,
+				AC000000000000000000000A /* Vinegar303Theme.swift in Sources */,
+				AC000000000000000000000B /* Vinegar303Knob.swift in Sources */,
+				AC000000000000000000000C /* Vinegar303SequencerView.swift in Sources */,
+				AC000000000000000000000D /* Vinegar303Editor.swift in Sources */,
+				AC000000000000000000000E /* Vinegar303App.swift in Sources */,
+				AC000000000000000000000F /* Vinegar303Host.swift in Sources */,
+				AC0000000000000000000010 /* HostView.swift in Sources */,
+				AC0000000000000000000012 /* Vinegar303Scale.swift in Sources */,
+				AC0000000000000000000013 /* Vinegar303Preset.swift in Sources */,
+				AC0000000000000000000014 /* Vinegar303PresetLibrary.swift in Sources */,
+				AC0000000000000000000015 /* Vinegar303PresetController.swift in Sources */,
+				AC0000000000000000000016 /* Vinegar303PresetView.swift in Sources */,
+				AC0000000000000000000019 /* Vinegar303MIDI.swift in Sources */,
+				AC000000000000000000001A /* Vinegar303MIDIView.swift in Sources */,
+				AC000000000000000000001B /* CoreMIDIInput.swift in Sources */,
+				AC000000000000000000001C /* Vinegar303BundledContent.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AE0000000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD0000000000000000000001 /* Vinegar303Types.swift in Sources */,
+				AD0000000000000000000002 /* Vinegar303Oscillator.swift in Sources */,
+				AD0000000000000000000003 /* Vinegar303LadderFilter.swift in Sources */,
+				AD0000000000000000000004 /* Vinegar303Envelope.swift in Sources */,
+				AD0000000000000000000005 /* Vinegar303Engine.swift in Sources */,
+				AD0000000000000000000006 /* Vinegar303Parameters.swift in Sources */,
+				AD0000000000000000000007 /* Vinegar303AudioUnit.swift in Sources */,
+				AD0000000000000000000008 /* ParameterModel.swift in Sources */,
+				AD0000000000000000000009 /* Vinegar303AUViewController.swift in Sources */,
+				AD000000000000000000000A /* Vinegar303Theme.swift in Sources */,
+				AD000000000000000000000B /* Vinegar303Knob.swift in Sources */,
+				AD000000000000000000000C /* Vinegar303SequencerView.swift in Sources */,
+				AD000000000000000000000D /* Vinegar303Editor.swift in Sources */,
+				AD000000000000000000000E /* Vinegar303Scale.swift in Sources */,
+				AD000000000000000000000F /* Vinegar303Preset.swift in Sources */,
+				AD0000000000000000000010 /* Vinegar303PresetLibrary.swift in Sources */,
+				AD0000000000000000000011 /* Vinegar303PresetController.swift in Sources */,
+				AD0000000000000000000012 /* Vinegar303PresetView.swift in Sources */,
+				AD0000000000000000000013 /* Vinegar303MIDI.swift in Sources */,
+				AD0000000000000000000014 /* Vinegar303MIDIView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B00000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF0000000000000000000002 /* Vinegar303Extension */;
+			targetProxy = B00000000000000000000002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B20000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B20000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B20000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Vinegar303/Vinegar303.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Vinegar303;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Vinegar303 contributors. MIT licensed.";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.vinegar303.Vinegar303;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		B20000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Vinegar303/Vinegar303.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Vinegar303;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Vinegar303 contributors. MIT licensed.";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.vinegar303.Vinegar303;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		B20000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Vinegar303Extension/Vinegar303Extension.entitlements;
+				CURRENT_PROJECT_VERSION = 2;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Vinegar303Extension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.vinegar303.Vinegar303.Extension;
+				PRODUCT_NAME = Vinegar303Extension;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		B20000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Vinegar303Extension/Vinegar303Extension.entitlements;
+				CURRENT_PROJECT_VERSION = 2;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Vinegar303Extension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.vinegar303.Vinegar303.Extension;
+				PRODUCT_NAME = Vinegar303Extension;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B10000000000000000000001 /* Build configuration list for PBXProject "Vinegar303" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B20000000000000000000001 /* Debug */,
+				B20000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000002 /* Build configuration list for PBXNativeTarget "Vinegar303" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B20000000000000000000003 /* Debug */,
+				B20000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000003 /* Build configuration list for PBXNativeTarget "Vinegar303Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B20000000000000000000005 /* Debug */,
+				B20000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AA0000000000000000000001 /* Project object */;
+}
