@@ -162,9 +162,9 @@ struct Vinegar303Knob: View {
                 Path(ellipseIn: bodyRect),
                 with: .radialGradient(
                     Gradient(colors: [
-                        Color(red: 0.17, green: 0.18, blue: 0.21),
-                        Color(red: 0.07, green: 0.075, blue: 0.09),
-                        Color(red: 0.035, green: 0.038, blue: 0.045),
+                        Vinegar303Theme.knobBodyTop,
+                        Vinegar303Theme.knobBodyMid,
+                        Vinegar303Theme.knobBodyBottom,
                     ]),
                     center: CGPoint(x: center.x - bodyRadius * 0.35, y: center.y - bodyRadius * 0.45),
                     startRadius: 1,
@@ -173,12 +173,12 @@ struct Vinegar303Knob: View {
             )
             context.stroke(
                 Path(ellipseIn: bodyRect),
-                with: .color(Color.white.opacity(0.12)),
+                with: .color(Vinegar303Theme.knobBodyHighlight),
                 lineWidth: 1
             )
             context.stroke(
                 Path(ellipseIn: bodyRect.insetBy(dx: 2.5, dy: 2.5)),
-                with: .color(Color.black.opacity(0.45)),
+                with: .color(Vinegar303Theme.knobBodyShadow),
                 lineWidth: 1
             )
 

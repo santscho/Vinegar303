@@ -131,6 +131,26 @@ enum Vinegar303Theme {
         light: NSColor.black.withAlphaComponent(0.075),
         dark: NSColor.black.withAlphaComponent(0.35)
     )
+    static let knobBodyTop = vinegarDynamicColor(
+        light: vinegarNSColor(0.985, 0.982, 0.964),
+        dark: vinegarNSColor(0.17, 0.18, 0.21)
+    )
+    static let knobBodyMid = vinegarDynamicColor(
+        light: vinegarNSColor(0.905, 0.898, 0.866),
+        dark: vinegarNSColor(0.07, 0.075, 0.09)
+    )
+    static let knobBodyBottom = vinegarDynamicColor(
+        light: vinegarNSColor(0.770, 0.762, 0.733),
+        dark: vinegarNSColor(0.035, 0.038, 0.045)
+    )
+    static let knobBodyHighlight = vinegarDynamicColor(
+        light: NSColor.white.withAlphaComponent(0.90),
+        dark: NSColor.white.withAlphaComponent(0.12)
+    )
+    static let knobBodyShadow = vinegarDynamicColor(
+        light: NSColor.black.withAlphaComponent(0.22),
+        dark: NSColor.black.withAlphaComponent(0.45)
+    )
     static let insetFill = vinegarDynamicColor(
         light: NSColor.black.withAlphaComponent(0.035),
         dark: NSColor.black.withAlphaComponent(0.24)

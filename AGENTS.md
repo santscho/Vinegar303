@@ -43,3 +43,12 @@ When the user sends exactly `UAT`:
    installable DMG for UAT.
 4. Report the deployed app path, pushed branch, architecture/signature checks, and any checks that
    could not be completed.
+
+## Development versioning and release protocol
+
+- While the project is in active development, keep versions in the `0.y.z` range
+  (for example `v0.1.0`, `v0.2.0`). Do not increment to `1.0.0` until explicitly instructed.
+- After a feature passes UAT, immediately merge its feature branch into `main` and delete the
+  feature branch. Do not create a new version tag or build a release automatically.
+- Keep merging tested features into `main` quietly. Create a version tag and cut a release only
+  when the user explicitly announces a milestone or release batch.
