@@ -15,6 +15,8 @@ demo timer, telemetry, networking or phone-home code anywhere in the project.
   and a free-running mode.
 - Scale-aware pitch quantization with seven modes, key selection and a global
   transpose bypass.
+- Four-slot stereo Delay FX chain with per-effect ON/OFF, drag reorder,
+  host-tempo divisions, feedback, tone, mix and ping-pong.
 - 16 patterns stored with the plug-in state, so patterns travel with the session;
   every pattern carries its own 1–16 step length. The built-in factory bank
   ships with all 16 pattern slots filled.
@@ -116,6 +118,11 @@ All parameters are address-stable and exposed through `AUParameterTree`.
 | 20 | Scale Type | Major – Locrian | Major |
 | 21 | Half Speed | 1:1 / 1:2 | 1:1 |
 
+FX slots use addresses **100–135**, nine parameters per slot: type, enabled,
+time, feedback, tone, mix, sync, division and ping-pong. The slots are fixed so
+the AU parameter tree and automation addresses stay stable; the editor presents
+the active slots as a reorderable chain.
+
 `fullState` stores the 16-step patterns, including each pattern’s length, alongside
 the standard parameter state.
 
@@ -131,7 +138,11 @@ the standard parameter state.
 - **Voice** — square/saw switch and bipolar tuning.
 - **Scale Aware** — Scale Aware toggle, key menu and mode menu. While active,
   notes are quantized at trigger time and Pitch Transpose is bypassed. It shares
-  its row with Output.
+  its row with FX and Output.
+- **FX** — inline Delay chain with an ON/OFF toggle left of each effect name,
+  remove and drag-reorder controls, and a selected-effect parameter drawer.
+  Delay supports free time or host-synced divisions, feedback, tone, mix and
+  ping-pong. The chain holds up to four effects.
 - **Output** — accent, volume, distortion and drive, aligned to the left edge.
 - All knobs write through `AUParameter.setValue(_:originator:)`, the
   automation-safe path, and follow host automation via a parameter observer.
@@ -293,8 +304,8 @@ swift test
 The SwiftPM target compiles the shared DSP/AU/UI/MIDI sources and runs engine
 tests that check audio output, pre-allocation silence, pattern state
 round-tripping, per-pattern lengths, preset scopes, categories, pattern copying,
-parameter ranges, MIDI parsing, channel filtering, learn capture, and profile
-storage.
+parameter ranges, delay tails and bypass, FX chain reorder, preset capture,
+MIDI parsing, channel filtering, learn capture, and profile storage.
 
 The AUv3 extension itself is best validated in Xcode with `auval`:
 

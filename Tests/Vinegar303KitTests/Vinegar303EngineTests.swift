@@ -43,6 +43,100 @@ final class Vinegar303EngineTests: XCTestCase {
         XCTAssertGreaterThan(engine.playheadStep, 0, "The sequencer should advance")
     }
 
+    func testDelayProducesTailAfterNoteOffWhenEnabled() {
+        let engine = makeDelayEngine(enabled: true)
+        engine.noteOn(midi: 45, velocity: 100)
+        _ = render(engine, frames: 4_800, hostPlaying: nil)
+
+        engine.noteOff(midi: 45)
+        // Skip the dry release, then measure 400–500 ms. The 120 ms delay
+        // repeats at 120, 240, 360 and 480 ms.
+        _ = render(engine, frames: 19_200, hostPlaying: nil)
+        let tail = render(engine, frames: 4_800, hostPlaying: nil)
+        let peak = tail.map(abs).max() ?? 0
+
+        XCTAssertGreaterThan(peak, 0.005, "The delay should continue after the note is released")
+    }
+
+    func testBypassedDelayDoesNotProduceATail() {
+        let engine = makeDelayEngine(enabled: false)
+        engine.noteOn(midi: 45, velocity: 100)
+        _ = render(engine, frames: 4_800, hostPlaying: nil)
+
+        engine.noteOff(midi: 45)
+        _ = render(engine, frames: 19_200, hostPlaying: nil)
+        let tail = render(engine, frames: 4_800, hostPlaying: nil)
+        let peak = tail.map(abs).max() ?? 0
+
+        XCTAssertLessThan(peak, 0.001, "A disabled delay must be fully bypassed")
+    }
+
+    func testReenabledDelayDoesNotReplayStaleAudio() {
+        let engine = makeDelayEngine(enabled: true)
+        engine.noteOn(midi: 45, velocity: 100)
+        _ = render(engine, frames: 4_800, hostPlaying: nil)
+        engine.noteOff(midi: 45)
+        _ = render(engine, frames: 4_800, hostPlaying: nil)
+
+        // Hold the slot bypassed long enough for the dry VCA release to settle;
+        // any remaining signal after re-enabling would be the stale delay buffer.
+        engine.setParameter(.fx1Enabled, 0)
+        _ = render(engine, frames: 96_000, hostPlaying: nil)
+        engine.setParameter(.fx1Enabled, 1)
+        let revived = render(engine, frames: 4_800, hostPlaying: nil)
+        let peak = revived.map(abs).max() ?? 0
+
+        XCTAssertLessThan(peak, 0.001, "Re-enabling a delay must not replay its stale buffer")
+    }
+
+    func testDelayDivisionsUseHostTempo() {
+        XCTAssertEqual(Vinegar303FXDivision.eighth.seconds(tempo: 120), 0.25, accuracy: 0.0001)
+        XCTAssertEqual(Vinegar303FXDivision.eighthDotted.seconds(tempo: 120), 0.375, accuracy: 0.0001)
+        XCTAssertEqual(Vinegar303FXDivision.sixteenth.seconds(tempo: 120), 0.125, accuracy: 0.0001)
+    }
+
+    func testFXChainModelAddsRemovesAndReorders() {
+        let model = ParameterModel(tree: Vinegar303ParameterTreeFactory.makeTree())
+        XCTAssertTrue(model.fxActiveSlots.isEmpty)
+
+        let first = model.addFX(.delay)
+        let second = model.addFX(.delay)
+        XCTAssertEqual(first, .one)
+        XCTAssertEqual(second, .two)
+        XCTAssertEqual(model.fxActiveSlots, [.one, .two])
+
+        model.setValue(200, for: .fx1Time)
+        model.setValue(500, for: .fx2Time)
+        model.moveFX(from: 0, to: 1)
+
+        XCTAssertEqual(model.value(.fx1Time), 500)
+        XCTAssertEqual(model.value(.fx2Time), 200)
+
+        model.removeFX(.one)
+        XCTAssertEqual(model.fxActiveSlots, [.one])
+        XCTAssertEqual(model.value(.fx1Time), 200)
+    }
+
+    func testFXParametersUseStableAddresses() {
+        XCTAssertEqual(Vinegar303Parameter.fx2Type.rawValue, 109)
+        XCTAssertEqual(Vinegar303Parameter.fx2Type.fxSlot, .two)
+        XCTAssertEqual(Vinegar303Parameter.fx2Type.fxControl, .type)
+        XCTAssertEqual(Vinegar303FXSlot.three.parameter(.mix).rawValue, 123)
+
+        let type = Vinegar303ParameterCatalog.spec(.fx1Type)
+        XCTAssertEqual(type.identifier, "fx1_type")
+        XCTAssertEqual(type.defaultValue, 0)
+        XCTAssertEqual(type.valueStrings, ["None", "Delay"])
+
+        let time = Vinegar303ParameterCatalog.spec(.fx1Time)
+        XCTAssertEqual(time.defaultValue, 300)
+        XCTAssertEqual(time.format(250), "250 ms")
+
+        let division = Vinegar303ParameterCatalog.spec(.fx1Division)
+        XCTAssertEqual(division.valueStrings?.count, Vinegar303FXDivision.allCases.count)
+        XCTAssertEqual(division.format(1), "1/8")
+    }
+
     func testEngineStaysSilentBeforePreparation() {
         let engine = Vinegar303Engine()
         var samples = [Float](repeating: 1, count: 128)
@@ -735,6 +829,100 @@ final class Vinegar303EngineTests: XCTestCase {
         XCTAssertEqual(unit.patterns[5].length, 9)
     }
 
+    func testFXParametersRoundTripThroughFullState() throws {
+        let unit = try Vinegar303AudioUnit(componentDescription: Vinegar303AudioUnit.componentDescription)
+        let tree = unit.editorParameterTree
+        guard let type = tree.parameter(withAddress: Vinegar303Parameter.fx1Type.rawValue),
+              let enabled = tree.parameter(withAddress: Vinegar303Parameter.fx1Enabled.rawValue),
+              let time = tree.parameter(withAddress: Vinegar303Parameter.fx1Time.rawValue),
+              let feedback = tree.parameter(withAddress: Vinegar303Parameter.fx1Feedback.rawValue),
+              let tone = tree.parameter(withAddress: Vinegar303Parameter.fx1Tone.rawValue),
+              let mix = tree.parameter(withAddress: Vinegar303Parameter.fx1Mix.rawValue),
+              let sync = tree.parameter(withAddress: Vinegar303Parameter.fx1Sync.rawValue),
+              let division = tree.parameter(withAddress: Vinegar303Parameter.fx1Division.rawValue),
+              let pingPong = tree.parameter(withAddress: Vinegar303Parameter.fx1PingPong.rawValue)
+        else {
+            return XCTFail("Missing FX parameters")
+        }
+
+        type.value = 1
+        enabled.value = 1
+        time.value = 180
+        feedback.value = 42
+        tone.value = 63
+        mix.value = 37
+        sync.value = 0
+        division.value = 2
+        pingPong.value = 1
+
+        let state = unit.fullState
+
+        type.value = 0
+        enabled.value = 0
+        time.value = 300
+        feedback.value = 35
+        tone.value = 55
+        mix.value = 25
+        sync.value = 1
+        division.value = 1
+        pingPong.value = 0
+        unit.fullState = state
+
+        XCTAssertEqual(type.value, 1)
+        XCTAssertEqual(enabled.value, 1)
+        XCTAssertEqual(time.value, 180)
+        XCTAssertEqual(feedback.value, 42)
+        XCTAssertEqual(tone.value, 63)
+        XCTAssertEqual(mix.value, 37)
+        XCTAssertEqual(sync.value, 0)
+        XCTAssertEqual(division.value, 2)
+        XCTAssertEqual(pingPong.value, 1)
+    }
+
+    func testPresetCapturesDelayChain() throws {
+        let temporaryDirectory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("Vinegar303PresetTest-\(UUID().uuidString)", isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: temporaryDirectory) }
+
+        let tree = Vinegar303ParameterTreeFactory.makeTree()
+        let patterns = PatternStore(patterns: Vinegar303PatternLibrary.factory()) { _ in }
+        let controller = Vinegar303PresetController(
+            library: Vinegar303PresetLibrary(rootURL: temporaryDirectory),
+            parameterTree: tree,
+            patterns: patterns
+        )
+
+        guard let type = tree.parameter(withAddress: Vinegar303Parameter.fx1Type.rawValue),
+              let enabled = tree.parameter(withAddress: Vinegar303Parameter.fx1Enabled.rawValue),
+              let time = tree.parameter(withAddress: Vinegar303Parameter.fx1Time.rawValue),
+              let feedback = tree.parameter(withAddress: Vinegar303Parameter.fx1Feedback.rawValue),
+              let mix = tree.parameter(withAddress: Vinegar303Parameter.fx1Mix.rawValue)
+        else {
+            return XCTFail("Missing FX parameters")
+        }
+
+        type.value = 1
+        enabled.value = 1
+        time.value = 240
+        feedback.value = 55
+        mix.value = 40
+
+        let entry = try controller.saveAs(name: "Delay Chain", category: "User", scope: .full)
+
+        type.value = 0
+        enabled.value = 0
+        time.value = 300
+        feedback.value = 35
+        mix.value = 25
+        _ = try controller.load(entry)
+
+        XCTAssertEqual(type.value, 1)
+        XCTAssertEqual(enabled.value, 1)
+        XCTAssertEqual(time.value, 240)
+        XCTAssertEqual(feedback.value, 55)
+        XCTAssertEqual(mix.value, 40)
+    }
+
     func testPresetControllerSavesLoadsAndKeepsScopeIsolation() throws {
         let temporaryDirectory = FileManager.default.temporaryDirectory
             .appendingPathComponent("Vinegar303PresetTest-\(UUID().uuidString)", isDirectory: true)
@@ -782,6 +970,31 @@ final class Vinegar303EngineTests: XCTestCase {
 
         _ = try controller.load(library.factoryEntry)
         XCTAssertThrowsError(try controller.saveCurrent())
+    }
+
+    private func makeDelayEngine(enabled: Bool) -> Vinegar303Engine {
+        let engine = Vinegar303Engine()
+        engine.prepare(sampleRate: sampleRate)
+        engine.setParameter(.sync, 0)
+        engine.setParameter(.run, 0)
+        engine.setParameter(.midiMode, 1)
+        engine.setParameter(.cutoff, 2_000)
+        engine.setParameter(.resonance, 0)
+        engine.setParameter(.envmod, 0)
+        engine.setParameter(.decay, 40)
+        engine.setParameter(.waveform, 1)
+        engine.setParameter(.volume, 0)
+        engine.setParameter(.distortion, 0)
+        engine.setParameter(.drive, 0)
+        engine.setParameter(.fx1Type, 1)
+        engine.setParameter(.fx1Enabled, enabled ? 1 : 0)
+        engine.setParameter(.fx1Sync, 0)
+        engine.setParameter(.fx1Time, 120)
+        engine.setParameter(.fx1Feedback, 40)
+        engine.setParameter(.fx1Tone, 80)
+        engine.setParameter(.fx1Mix, 50)
+        engine.setParameter(.fx1PingPong, 0)
+        return engine
     }
 
     private func render(
