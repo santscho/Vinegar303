@@ -505,30 +505,35 @@ struct Vinegar303Editor: View {
             fxKnob(slot.parameter(.mix), label: "MIX", accent: Vinegar303Theme.cyan)
 
             VStack(alignment: .leading, spacing: 6) {
-                Vinegar303Chip(
-                    caption: "SYNC",
-                    value: sync ? "HOST" : "FREE",
-                    accent: Vinegar303Theme.cyan,
-                    isActive: sync
-                ) {
-                    model.toggle(slot.parameter(.sync))
-                }
+                // Keep the chip block within the drawer's 96 px height. Three
+                // stacked chips are taller than the drawer and paint over the
+                // panel border, so SYNC and DIVISION share the first row.
+                HStack(spacing: 6) {
+                    Vinegar303Chip(
+                        caption: "SYNC",
+                        value: sync ? "HOST" : "FREE",
+                        accent: Vinegar303Theme.cyan,
+                        isActive: sync
+                    ) {
+                        model.toggle(slot.parameter(.sync))
+                    }
 
-                Vinegar303MenuChip(
-                    caption: "DIVISION",
-                    value: model.displayValue(slot.parameter(.division)),
-                    accent: Vinegar303Theme.cyan,
-                    isActive: sync,
-                    options: Vinegar303FXDivision.allCases.map(\.title),
-                    selectedIndex: Int(model.value(slot.parameter(.division)).rounded())
-                ) { index in
-                    model.setValueWithGesture(
-                        AUValue(index),
-                        for: slot.parameter(.division)
-                    )
+                    Vinegar303MenuChip(
+                        caption: "DIVISION",
+                        value: model.displayValue(slot.parameter(.division)),
+                        accent: Vinegar303Theme.cyan,
+                        isActive: sync,
+                        options: Vinegar303FXDivision.allCases.map(\.title),
+                        selectedIndex: Int(model.value(slot.parameter(.division)).rounded())
+                    ) { index in
+                        model.setValueWithGesture(
+                            AUValue(index),
+                            for: slot.parameter(.division)
+                        )
+                    }
+                    .opacity(sync ? 1 : 0.45)
+                    .allowsHitTesting(sync)
                 }
-                .opacity(sync ? 1 : 0.45)
-                .allowsHitTesting(sync)
 
                 Vinegar303Chip(
                     caption: "PING-PONG",
