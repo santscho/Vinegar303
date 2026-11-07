@@ -4,11 +4,11 @@ import CoreAudioKit
 import SwiftUI
 
 private enum Vinegar303PluginMetrics {
-    /// The AUv3 editor uses a 1300×782 canvas so the complete section layout,
-    /// FX chain, footer and status text fit without empty bands or overlap. The
-    /// plugin host controls the outer container size; the SwiftUI wrapper
+    /// The AUv3 editor uses a 1300×768 canvas so the complete three-column
+    /// section layout, FX chain and footer fit without empty bands or overlap.
+    /// The plugin host controls the outer container size; the SwiftUI wrapper
     /// scales this canvas to fit without changing its proportions.
-    static let nativeContentSize = NSSize(width: 1_300, height: 782)
+    static let nativeContentSize = NSSize(width: 1_300, height: 768)
 }
 
 /// Fixed-canvas SwiftUI wrapper for the AUv3 editor. AU hosts are free to give

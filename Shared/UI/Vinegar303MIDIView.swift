@@ -91,7 +91,6 @@ struct Vinegar303MIDIPanel: View {
     @ObservedObject var midi: Vinegar303MIDIController
 
     @State private var profileName: String
-    @State private var showingAllBindings = false
     @State private var isSavingProfile = false
     @State private var showingDeleteConfirmation = false
     @FocusState private var profileNameFocused: Bool
@@ -125,18 +124,8 @@ struct Vinegar303MIDIPanel: View {
 
     var body: some View {
         Vinegar303Panel("MIDI", accent: Vinegar303Theme.cyan) {
-            HStack(alignment: .top, spacing: 14) {
-                inputColumn
-                    .frame(width: 430, alignment: .leading)
-
-                Rectangle()
-                    .fill(Vinegar303Theme.border)
-                    .frame(width: 1)
-                    .padding(.vertical, 2)
-
-                mappingsColumn
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            inputColumn
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .onChange(of: midi.profile.name) { newName in
             profileName = Self.editableName(for: newName)
@@ -393,81 +382,10 @@ struct Vinegar303MIDIPanel: View {
         }
     }
 
-    private var mappingsColumn: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            HStack {
-                Text("MAPPINGS")
-                    .font(Vinegar303Theme.monoSmall)
-                    .tracking(1.0)
-                    .foregroundStyle(Vinegar303Theme.faint)
-                Text("\(midi.profile.bindings.count)")
-                    .font(Vinegar303Theme.monoSmall)
-                    .foregroundStyle(Vinegar303Theme.faint)
-                Spacer(minLength: 6)
-                Text("CC + NOTES + PITCH BEND")
-                    .font(Vinegar303Theme.monoSmall)
-                    .tracking(0.6)
-                    .foregroundStyle(Vinegar303Theme.faint)
-            }
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 5) {
-                    ForEach(visibleBindings) { binding in
-                        bindingChip(binding)
-                    }
-                }
-            }
-            .frame(height: 28)
-
-            Button(showingAllBindings ? "SHOW LESS" : "SHOW ALL \(midi.profile.bindings.count)") {
-                showingAllBindings.toggle()
-            }
-            .buttonStyle(.plain)
-            .font(.system(size: 7, weight: .bold, design: .monospaced))
-            .foregroundStyle(Vinegar303Theme.faint)
-        }
-    }
-
-    private var visibleBindings: [Vinegar303MIDIBinding] {
-        if showingAllBindings {
-            return midi.profile.bindings
-        }
-        return Array(midi.profile.bindings.prefix(14))
-    }
-
     private func saveProfile() {
         let saved = midi.saveProfile(named: profileName)
         profileName = saved.name
         isSavingProfile = false
     }
 
-    private func bindingChip(_ binding: Vinegar303MIDIBinding) -> some View {
-        HStack(spacing: 4) {
-            Text(binding.summary)
-                .font(.system(size: 7, weight: .semibold, design: .monospaced))
-                .foregroundStyle(Vinegar303Theme.dim)
-                .lineLimit(1)
-
-            Button {
-                midi.removeBinding(binding)
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 6, weight: .bold))
-                    .foregroundStyle(Vinegar303Theme.faint)
-                    .frame(width: 12, height: 12)
-            }
-            .buttonStyle(.plain)
-            .help("Remove this mapping")
-        }
-        .padding(.horizontal, 6)
-        .padding(.vertical, 3)
-        .background(
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .fill(Vinegar303Theme.controlFill)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .stroke(Vinegar303Theme.border, lineWidth: 1)
-        )
-    }
 }

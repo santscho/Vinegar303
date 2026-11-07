@@ -16,6 +16,10 @@ struct Vinegar303Editor: View {
     private let playhead: (() -> Int)?
     private let midi: Vinegar303MIDIController?
 
+    /// At the fixed 1300 px canvas, this is one third of the content width, so
+    /// the wider panel in each row gets approximately two columns.
+    private static let sideColumnWidth: CGFloat = 413
+
     init(
         parameterTree: AUParameterTree,
         patterns: PatternStore,
@@ -50,34 +54,35 @@ struct Vinegar303Editor: View {
         VStack(spacing: 14) {
             header
 
-            Vinegar303SequencerPanel(
-                model: model,
-                patterns: patterns,
-                presets: presets,
-                showingPresetManager: $showingPresetManager,
-                playhead: playhead,
-                midi: midi
-            )
-            .frame(maxWidth: .infinity)
+            HStack(alignment: .top, spacing: 14) {
+                Vinegar303SequencerPanel(
+                    model: model,
+                    patterns: patterns,
+                    presets: presets,
+                    showingPresetManager: $showingPresetManager,
+                    playhead: playhead,
+                    midi: midi
+                )
+                .frame(maxWidth: .infinity)
+
+                scalePanel
+                    .frame(width: Self.sideColumnWidth)
+            }
 
             HStack(alignment: .top, spacing: 14) {
                 filterPanel
                     .frame(maxWidth: .infinity)
                 voicePanel
-                    .frame(maxWidth: .infinity)
+                    .frame(width: Self.sideColumnWidth)
             }
 
             HStack(alignment: .top, spacing: 14) {
-                scalePanel
-                    .frame(maxWidth: .infinity)
                 fxPanel
-                    .frame(width: 500)
-                outputPanel
                     .frame(maxWidth: .infinity)
-            }
-
-            if let midi {
-                Vinegar303MIDIPanel(midi: midi)
+                if let midi {
+                    Vinegar303MIDIPanel(midi: midi)
+                        .frame(width: Self.sideColumnWidth)
+                }
             }
 
             footer
@@ -183,6 +188,15 @@ struct Vinegar303Editor: View {
                     model.toggle(.midiMode)
                 }
                 .vinegar303LearnBadge(for: .midiMode, midi: midi)
+
+                Vinegar303ParameterKnob(
+                    model: model,
+                    id: .volume,
+                    accent: Vinegar303Theme.amber,
+                    size: 38,
+                    labelOverride: "MASTER"
+                )
+                .help("Master output volume")
             }
         }
     }
@@ -207,10 +221,13 @@ struct Vinegar303Editor: View {
                         : "Pitch Transpose: \(model.displayValue(.pitchTranspose))"
                 )
 
-                Vinegar303ParameterKnob(model: model, id: .cutoff, accent: Vinegar303Theme.acid)
-                Vinegar303ParameterKnob(model: model, id: .resonance, accent: Vinegar303Theme.acid)
-                Vinegar303ParameterKnob(model: model, id: .envmod, accent: Vinegar303Theme.acid)
-                Vinegar303ParameterKnob(model: model, id: .decay, accent: Vinegar303Theme.acid)
+                Vinegar303ParameterKnob(model: model, id: .cutoff, accent: Vinegar303Theme.acid, size: 48)
+                Vinegar303ParameterKnob(model: model, id: .resonance, accent: Vinegar303Theme.acid, size: 48)
+                Vinegar303ParameterKnob(model: model, id: .envmod, accent: Vinegar303Theme.acid, size: 48)
+                Vinegar303ParameterKnob(model: model, id: .decay, accent: Vinegar303Theme.acid, size: 48)
+                Vinegar303ParameterKnob(model: model, id: .accent, accent: Vinegar303Theme.amber, size: 48)
+                Vinegar303ParameterKnob(model: model, id: .distortion, accent: Vinegar303Theme.amber, size: 48)
+                Vinegar303ParameterKnob(model: model, id: .drive, accent: Vinegar303Theme.amber, size: 48)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -243,18 +260,6 @@ struct Vinegar303Editor: View {
                     size: 48
                 )
             }
-        }
-    }
-
-    private var outputPanel: some View {
-        Vinegar303Panel("OUTPUT", accent: Vinegar303Theme.amber) {
-            HStack(spacing: 14) {
-                Vinegar303ParameterKnob(model: model, id: .accent, accent: Vinegar303Theme.amber)
-                Vinegar303ParameterKnob(model: model, id: .volume, accent: Vinegar303Theme.amber)
-                Vinegar303ParameterKnob(model: model, id: .distortion, accent: Vinegar303Theme.amber)
-                Vinegar303ParameterKnob(model: model, id: .drive, accent: Vinegar303Theme.amber)
-            }
-            .frame(maxWidth: .infinity, minHeight: 126, alignment: .topLeading)
         }
     }
 
@@ -587,31 +592,20 @@ struct Vinegar303Editor: View {
     // MARK: Footer
 
     private var footer: some View {
-        HStack(spacing: 7) {
+        HStack(spacing: 6) {
             Circle()
                 .fill(Vinegar303Theme.acid)
                 .frame(width: 4, height: 4)
             Text("AUv3 · aumu/Vg03")
                 .font(Vinegar303Theme.monoSmall)
                 .foregroundStyle(Vinegar303Theme.dim)
-            Text("·")
-                .foregroundStyle(Vinegar303Theme.faint)
-            Text("UNLOCKED — NO LICENSE CHECK")
-                .font(Vinegar303Theme.monoSmall)
-                .foregroundStyle(Vinegar303Theme.acid.opacity(0.8))
-            Text("·")
-                .foregroundStyle(Vinegar303Theme.faint)
-            Text("NO TELEMETRY")
-                .font(Vinegar303Theme.monoSmall)
-                .foregroundStyle(Vinegar303Theme.dim)
 
             Spacer(minLength: 8)
 
-            Text("v1.0 · MIT")
+            Text("v1.0")
                 .font(Vinegar303Theme.monoSmall)
                 .foregroundStyle(Vinegar303Theme.faint)
         }
-        .padding(.top, 2)
     }
 }
 
