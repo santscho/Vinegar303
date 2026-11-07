@@ -6,3 +6,14 @@ DerivedData/
 dist/
 xcuserdata/
 .scratch/
+
+# credentials — never commit
+.env
+.env.local
+.env.*.local
+*.token
+*.pem
+*.p8
+secrets/
+.secrets/
+.netrc
