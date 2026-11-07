@@ -55,34 +55,37 @@ struct Vinegar303Editor: View {
             header
 
             HStack(alignment: .top, spacing: 14) {
-                Vinegar303SequencerPanel(
-                    model: model,
-                    patterns: patterns,
-                    presets: presets,
-                    showingPresetManager: $showingPresetManager,
-                    playhead: playhead,
-                    midi: midi
-                )
-                .frame(maxWidth: .infinity)
+                VStack(spacing: 14) {
+                    Vinegar303SequencerPanel(
+                        model: model,
+                        patterns: patterns,
+                        presets: presets,
+                        showingPresetManager: $showingPresetManager,
+                        playhead: playhead,
+                        midi: midi
+                    )
 
-                scalePanel
-                    .frame(width: Self.sideColumnWidth)
-            }
+                    filterPanel
 
-            HStack(alignment: .top, spacing: 14) {
-                filterPanel
-                    .frame(maxWidth: .infinity)
-                voicePanel
-                    .frame(width: Self.sideColumnWidth)
-            }
-
-            HStack(alignment: .top, spacing: 14) {
-                fxPanel
-                    .frame(maxWidth: .infinity)
-                if let midi {
-                    Vinegar303MIDIPanel(midi: midi)
-                        .frame(width: Self.sideColumnWidth)
+                    HStack(alignment: .top, spacing: 14) {
+                        voicePanel
+                            .frame(maxWidth: .infinity)
+                        if let midi {
+                            Vinegar303MIDIPanel(midi: midi)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .top)
+
+                VStack(spacing: 14) {
+                    scalePanel
+                        .frame(height: 90)
+                    fxPanel
+                        .frame(maxHeight: .infinity)
+                }
+                .frame(width: Self.sideColumnWidth)
+                .frame(maxHeight: .infinity, alignment: .top)
             }
 
             footer
@@ -268,61 +271,44 @@ struct Vinegar303Editor: View {
             "SCALE AWARE",
             accent: isScaleAware ? Vinegar303Theme.acid : Vinegar303Theme.dim
         ) {
-            VStack(alignment: .leading, spacing: 7) {
-                HStack(spacing: 8) {
-                    Vinegar303Chip(
-                        caption: "SCALE AWARE",
-                        value: isScaleAware ? "ON" : "OFF",
-                        accent: Vinegar303Theme.acid,
-                        isActive: isScaleAware
-                    ) {
-                        model.toggle(.scaleEnable)
-                    }
-                    .vinegar303LearnBadge(for: .scaleEnable, midi: midi)
-
-                    Spacer(minLength: 8)
-
-                    Vinegar303MenuChip(
-                        caption: "KEY",
-                        value: model.displayValue(.scaleKey),
-                        accent: Vinegar303Theme.acid,
-                        isActive: isScaleAware,
-                        options: Vinegar303Scale.keyNames,
-                        selectedIndex: Int(model.value(.scaleKey).rounded())
-                    ) { index in
-                        model.setValueWithGesture(AUValue(index), for: .scaleKey)
-                    }
-                    .vinegar303LearnBadge(for: .scaleKey, midi: midi)
-
-                    Vinegar303MenuChip(
-                        caption: "MODE",
-                        value: model.displayValue(.scaleType),
-                        accent: Vinegar303Theme.acid,
-                        isActive: isScaleAware,
-                        options: Vinegar303Scale.modeNames,
-                        selectedIndex: Int(model.value(.scaleType).rounded())
-                    ) { index in
-                        model.setValueWithGesture(AUValue(index), for: .scaleType)
-                    }
-                    .vinegar303LearnBadge(for: .scaleType, midi: midi)
+            HStack(spacing: 6) {
+                Vinegar303Chip(
+                    caption: "SCALE",
+                    value: isScaleAware ? "ON" : "OFF",
+                    accent: Vinegar303Theme.acid,
+                    isActive: isScaleAware
+                ) {
+                    model.toggle(.scaleEnable)
                 }
+                .vinegar303LearnBadge(for: .scaleEnable, midi: midi)
 
-                Spacer(minLength: 0)
+                Spacer(minLength: 4)
 
-                HStack(spacing: 5) {
-                    Circle()
-                        .fill(isScaleAware ? Vinegar303Theme.acid : Vinegar303Theme.faint)
-                        .frame(width: 3, height: 3)
-                    Text(isScaleAware ? "TRANSPOSE BYPASSED" : "CHROMATIC PLAYBACK")
-                        .font(Vinegar303Theme.monoSmall)
-                        .tracking(0.7)
-                        .foregroundStyle(isScaleAware ? Vinegar303Theme.acid.opacity(0.8) : Vinegar303Theme.faint)
+                Vinegar303MenuChip(
+                    caption: "KEY",
+                    value: model.displayValue(.scaleKey),
+                    accent: Vinegar303Theme.acid,
+                    isActive: isScaleAware,
+                    options: Vinegar303Scale.keyNames,
+                    selectedIndex: Int(model.value(.scaleKey).rounded())
+                ) { index in
+                    model.setValueWithGesture(AUValue(index), for: .scaleKey)
                 }
-                .lineLimit(1)
+                .vinegar303LearnBadge(for: .scaleKey, midi: midi)
+
+                Vinegar303MenuChip(
+                    caption: "MODE",
+                    value: model.displayValue(.scaleType),
+                    accent: Vinegar303Theme.acid,
+                    isActive: isScaleAware,
+                    options: Vinegar303Scale.modeNames,
+                    selectedIndex: Int(model.value(.scaleType).rounded())
+                ) { index in
+                    model.setValueWithGesture(AUValue(index), for: .scaleType)
+                }
+                .vinegar303LearnBadge(for: .scaleType, midi: midi)
             }
-            // Match the labeled tuning knob in VOICE so the paired panels
-            // share the same height while keeping their controls horizontal.
-            .frame(maxWidth: .infinity, minHeight: 126)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -356,39 +342,40 @@ struct Vinegar303Editor: View {
                         .frame(maxWidth: .infinity, minHeight: 96, alignment: .topLeading)
                 }
             }
-            .frame(maxWidth: .infinity, minHeight: 126, alignment: .topLeading)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
     }
 
     private var fxChain: some View {
-        HStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: 5) {
             if activeFXSlots.isEmpty {
-                Text("NO EFFECTS")
-                    .font(Vinegar303Theme.monoSmall)
-                    .tracking(0.8)
-                    .foregroundStyle(Vinegar303Theme.faint)
-                addFXMenu(showLabel: true)
-            } else {
-                ForEach(activeFXSlots) { slot in
-                    if let index = activeFXSlots.firstIndex(of: slot), index > 0 {
-                        fxChainArrow
-                    }
-                    fxChip(slot)
+                HStack(spacing: 6) {
+                    Text("NO EFFECTS")
+                        .font(Vinegar303Theme.monoSmall)
+                        .tracking(0.8)
+                        .foregroundStyle(Vinegar303Theme.faint)
+                    Spacer(minLength: 4)
+                    addFXMenu(showLabel: true)
                 }
-
-                fxChainArrow
-                addFXMenu(showLabel: false)
+            } else {
+                LazyVGrid(
+                    columns: [
+                        GridItem(.flexible(), spacing: 5),
+                        GridItem(.flexible(), spacing: 5)
+                    ],
+                    alignment: .leading,
+                    spacing: 5
+                ) {
+                    ForEach(activeFXSlots) { slot in
+                        fxChip(slot)
+                    }
+                    if activeFXSlots.count < Vinegar303FXSlot.count {
+                        addFXMenu(showLabel: true)
+                    }
+                }
             }
-
-            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var fxChainArrow: some View {
-        Image(systemName: "chevron.right")
-            .font(.system(size: 7, weight: .bold))
-            .foregroundStyle(Vinegar303Theme.faint)
     }
 
     private func fxChip(_ slot: Vinegar303FXSlot) -> some View {
@@ -437,6 +424,7 @@ struct Vinegar303Editor: View {
         }
         .padding(.horizontal, 4)
         .padding(.vertical, 3)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .fill(isSelected ? Vinegar303Theme.cyan.opacity(0.14) : Vinegar303Theme.controlFillSubtle)
@@ -499,58 +487,63 @@ struct Vinegar303Editor: View {
     private func fxParameterDrawer(_ slot: Vinegar303FXSlot) -> some View {
         let sync = model.value(slot.parameter(.sync)) >= 0.5
 
-        return HStack(alignment: .top, spacing: 7) {
-            fxKnob(slot.parameter(.time), label: "TIME", accent: Vinegar303Theme.cyan)
-                .opacity(sync ? 0.35 : 1)
-                .allowsHitTesting(!sync)
-                .help(sync ? "Time is set by the host-synced division" : "Delay time")
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                fxKnob(slot.parameter(.time), label: "TIME", accent: Vinegar303Theme.cyan)
+                    .opacity(sync ? 0.35 : 1)
+                    .allowsHitTesting(!sync)
+                    .help(sync ? "Time is set by the host-synced division" : "Delay time")
+                    .frame(maxWidth: .infinity)
 
-            fxKnob(slot.parameter(.feedback), label: "FEEDBACK", accent: Vinegar303Theme.cyan)
-            fxKnob(slot.parameter(.tone), label: "TONE", accent: Vinegar303Theme.cyan)
-            fxKnob(slot.parameter(.mix), label: "MIX", accent: Vinegar303Theme.cyan)
+                fxKnob(slot.parameter(.feedback), label: "FEEDBACK", accent: Vinegar303Theme.cyan)
+                    .frame(maxWidth: .infinity)
+            }
 
-            VStack(alignment: .leading, spacing: 6) {
-                // Keep the chip block within the drawer's 96 px height. Three
-                // stacked chips are taller than the drawer and paint over the
-                // panel border, so SYNC and DIVISION share the first row.
-                HStack(spacing: 6) {
-                    Vinegar303Chip(
-                        caption: "SYNC",
-                        value: sync ? "HOST" : "FREE",
-                        accent: Vinegar303Theme.cyan,
-                        isActive: sync
-                    ) {
-                        model.toggle(slot.parameter(.sync))
-                    }
+            HStack(spacing: 8) {
+                fxKnob(slot.parameter(.tone), label: "TONE", accent: Vinegar303Theme.cyan)
+                    .frame(maxWidth: .infinity)
 
-                    Vinegar303MenuChip(
-                        caption: "DIVISION",
-                        value: model.displayValue(slot.parameter(.division)),
-                        accent: Vinegar303Theme.cyan,
-                        isActive: sync,
-                        options: Vinegar303FXDivision.allCases.map(\.title),
-                        selectedIndex: Int(model.value(slot.parameter(.division)).rounded())
-                    ) { index in
-                        model.setValueWithGesture(
-                            AUValue(index),
-                            for: slot.parameter(.division)
-                        )
-                    }
-                    .opacity(sync ? 1 : 0.45)
-                    .allowsHitTesting(sync)
-                }
+                fxKnob(slot.parameter(.mix), label: "MIX", accent: Vinegar303Theme.cyan)
+                    .frame(maxWidth: .infinity)
+            }
 
+            HStack(spacing: 6) {
                 Vinegar303Chip(
-                    caption: "PING-PONG",
-                    value: model.value(slot.parameter(.pingPong)) >= 0.5 ? "ON" : "OFF",
+                    caption: "SYNC",
+                    value: sync ? "HOST" : "FREE",
                     accent: Vinegar303Theme.cyan,
-                    isActive: model.value(slot.parameter(.pingPong)) >= 0.5
+                    isActive: sync
                 ) {
-                    model.toggle(slot.parameter(.pingPong))
+                    model.toggle(slot.parameter(.sync))
                 }
+
+                Vinegar303MenuChip(
+                    caption: "DIVISION",
+                    value: model.displayValue(slot.parameter(.division)),
+                    accent: Vinegar303Theme.cyan,
+                    isActive: sync,
+                    options: Vinegar303FXDivision.allCases.map(\.title),
+                    selectedIndex: Int(model.value(slot.parameter(.division)).rounded())
+                ) { index in
+                    model.setValueWithGesture(
+                        AUValue(index),
+                        for: slot.parameter(.division)
+                    )
+                }
+                .opacity(sync ? 1 : 0.45)
+                .allowsHitTesting(sync)
+            }
+
+            Vinegar303Chip(
+                caption: "PING-PONG",
+                value: model.value(slot.parameter(.pingPong)) >= 0.5 ? "ON" : "OFF",
+                accent: Vinegar303Theme.cyan,
+                isActive: model.value(slot.parameter(.pingPong)) >= 0.5
+            ) {
+                model.toggle(slot.parameter(.pingPong))
             }
         }
-        .frame(height: 96, alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func fxKnob(
